@@ -93,7 +93,7 @@ public class TagDetails extends AppCompatActivity {
             String inventoryNumberText = tagData.getInventoryNumber();
             String nomenclatureText = tagData.getNomenclature();
 
-            description.setText(descriptionText != null ? descriptionText : "Нет данных");
+            description.setText(descriptionText != null ? descriptionText : "Нет  данных");
             inventory_number.setText(inventoryNumberText != null ? inventoryNumberText : "Нет данных");
             nomenclature.setText(nomenclatureText != null ? nomenclatureText : "Нет данных");
         } else {
