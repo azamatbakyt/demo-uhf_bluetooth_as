@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#252A36"
+    tools:context=".TagDetails">
+
+    <ImageView
+        android:id="@+id/default_photo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="fitXY"
+        android:src="@drawable/rfid_image" />
+
+
+    <TextView
+        android:id="@+id/epc"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/default_photo"
+        android:layout_alignParentStart="true"
+        android:background="#BE6731"
+        android:fontFamily="@font/montserrat_bold"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+
+    <LinearLayout
+        android:id="@+id/linear_layout_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/epc"
+        android:layout_marginHorizontal="15dp"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <EditText
+            android:id="@+id/add_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:backgroundTint="@color/white_e0"
+            android:ems="10"
+            android:fontFamily="@font/montserrat_bold"
+            android:hint="@string/insert_description"
+            android:inputType="text"
+            android:maxLength="100"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="22sp" />
+
+
+        <EditText
+            android:id="@+id/add_inventory_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:backgroundTint="@color/white_e0"
+            android:ems="10"
+            android:fontFamily="@font/montserrat_bold"
+            android:hint="@string/insert_description"
+            android:inputType="text"
+            android:maxLength="30"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="22sp" />
+
+
+        <EditText
+            android:id="@+id/add_nomenclature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:backgroundTint="@color/white_e0"
+            android:ems="10"
+            android:fontFamily="@font/montserrat_bold"
+            android:hint="@string/insert_description"
+            android:inputType="text"
+            android:maxLength="20"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/save_btn"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@+id/linear_layout_2"
+        android:background="@color/gray"
+        android:fontFamily="@font/montserrat_bold"
+        android:padding="1dp"
+        android:text="@string/save_btn" />
+
+
+</RelativeLayout>

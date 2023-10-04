@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="1dp"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="3dp"
+    app:cardBackgroundColor="#252A36">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.pkmmte.view.CircularImageView
+            android:id="@+id/epc_image"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_tag_black"
+            app:border="true"
+            app:border_color="@color/gray"
+            app:border_width="1dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/moreBtn"
+            android:layout_toEndOf="@+id/epc_image"
+            android:orientation="vertical">
+
+            <!--Nomenclature-->
+            <TextView
+                android:id="@+id/nomenclature_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="NameNumber"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <!--EPC-->
+            <TextView
+                android:id="@+id/epc_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="EPC"
+                android:textColor="@color/white"
+                android:textSize="18sp"/>
+
+            <!--Description-->
+            <TextView
+                android:id="@+id/description_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textColor="@color/white"
+                android:textSize="18sp"/>
+            <!--Type-->
+            <TextView
+                android:id="@+id/type_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Type info"
+                android:textColor="@color/white"
+                android:textSize="18sp"/>
+            <!--Amount-->
+            <TextView
+                android:id="@+id/amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Amount"
+                android:textColor="@color/white"
+                android:textSize="18sp"/>
+        </LinearLayout>
+        <!--To show options like delete, edit, etc-->
+        <ImageButton
+            android:id="@+id/moreBtn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@null"
+            android:src="@drawable/ic_more"
+            android:importantForAccessibility="no" />
+
+    </RelativeLayout>
+
+
+</androidx.cardview.widget.CardView>
