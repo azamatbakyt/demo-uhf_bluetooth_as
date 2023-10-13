@@ -14,7 +14,10 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import com.example.uhf_bt.DataBase;
+import com.example.uhf_bt.InsertFacility;
+import com.example.uhf_bt.InsertPremise;
 import com.example.uhf_bt.MainActivity;
+import com.example.uhf_bt.Models.Premise;
 import com.example.uhf_bt.R;
 import com.example.uhf_bt.SettingsOfUser;
 
@@ -26,7 +29,9 @@ public class SetUser extends Fragment {
     private Spinner spnPremise;
     private Spinner spnUser;
 
-    private Button setSettings;
+    private Button setSettingsOfUser,
+            setFacility,
+            setPremise;
 
     MainActivity context;
     private DataBase db;
@@ -41,20 +46,39 @@ public class SetUser extends Fragment {
         fillSpinner();
         return view;
     }
-    private void init(View view){
+
+    private void init(View view) {
         // facility layout
         spnFacility = (Spinner) view.findViewById(R.id.spnFacility);
+        setFacility = view.findViewById(R.id.btnSetFacility);
         // premise layout
         spnPremise = (Spinner) view.findViewById(R.id.spnPremise);
+        setPremise = view.findViewById(R.id.btnSetPremise);
         // user layout
-        setSettings = view.findViewById(R.id.btnSetSettings);
+        setSettingsOfUser = view.findViewById(R.id.btnSetSettings);
         spnUser = (Spinner) view.findViewById(R.id.spnUser);
         db = new DataBase(getActivity());
-        setSettings.setOnClickListener(new View.OnClickListener() {
+        setSettingsOfUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, SettingsOfUser.class);
                 startActivity(intent);
+            }
+        });
+
+        setFacility.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent2 = new Intent(context, InsertFacility.class);
+                startActivity(intent2);
+            }
+        });
+
+        setPremise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent3 = new Intent(context, InsertPremise.class);
+                startActivity(intent3);
             }
         });
 
@@ -66,19 +90,30 @@ public class SetUser extends Fragment {
         context = (MainActivity) getActivity();
     }
 
-    public void fillSpinner(){
+    public void fillSpinner() {
         List<String> facilities = db.getFacilities();
-        List<String> premises = db.getPremises();
-        List<String> executors = db.getExecutors();
-
         ArrayAdapter<String> facilityAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, facilities);
-        ArrayAdapter<String> premiseAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, premises);
+
+        // Получаем выбранный элемент из спиннера spnFacility
+        String selectedFacility = (String) spnFacility.getSelectedItem();
+
+        if (selectedFacility != null) {
+            // Убеждаемся, что строка не равна null, прежде чем преобразовывать ее в целое число
+            int id = Integer.parseInt(selectedFacility);
+
+            // Используйте id для дальнейших действий
+            List<String> premises = db.getRoomsByObject(id);
+            ArrayAdapter<String> premiseAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, premises);
+            spnPremise.setAdapter(premiseAdapter);
+        }
+
+        List<String> executors = db.getUsers();
         ArrayAdapter<String> executorAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, executors);
 
         spnFacility.setAdapter(facilityAdapter);
-        spnPremise.setAdapter(premiseAdapter);
         spnUser.setAdapter(executorAdapter);
     }
+
 
     @Override
     public void onResume() {

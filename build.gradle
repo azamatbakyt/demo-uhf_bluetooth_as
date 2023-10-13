@@ -53,6 +53,13 @@ android {
         // but continue the build even when errors are found:
         abortOnError false
     }
+    buildFeatures {
+        viewBinding true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 buildscript {
@@ -98,6 +105,8 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation files('libs/cw-deviceapiver20191022.jar')
     implementation group: 'com.opencsv', name: 'opencsv', version: '4.6'
+    implementation 'androidx.navigation:navigation-fragment:2.5.3'
+    implementation 'androidx.navigation:navigation-ui:2.5.3'
     compile 'com.pkmmte.view:circularimageview:1.1'
     // 蓝牙固件升级
     implementation('no.nordicsemi.android:dfu:1.9.0') {

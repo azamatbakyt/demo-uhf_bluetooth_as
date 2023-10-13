@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:orientation="vertical"
+    android:background="#252A36"
+    android:theme="@style/Theme.AppCompat"
+    android:layout_height="match_parent"
+    tools:context=".TagDetailInfo">
+
+    <ImageView
+        android:id="@+id/default_photo"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="-1dp"
+        android:layout_marginTop="1dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="fitXY"
+        android:src="@drawable/rfid_image" />
+
+    <LinearLayout
+        android:id="@+id/linear_layout_2"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:layout_below="@+id/default_photo"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="-7dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="1dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/epcDetail"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:background="#BE6731"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/EpcType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#BF3D576B"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/default_text"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/EpcDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#7F7384"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/default_text"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+
+        <TextView
+            android:id="@+id/EpcInventoryNumber"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:background="#545E45"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/default_text"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/EpcNomenclature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#BF3D576B"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/default_text"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/EpcAmount"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:background="#545E45"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/default_text"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/EpcFacility"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#BF3D576B"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/default_text"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/EpcPremise"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:background="#545E45"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/default_text"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        <TextView
+            android:id="@+id/EpcExecutor"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:background="#545E45"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/default_text"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@+id/linear_layout_2"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="-1dp"
+        android:layout_marginTop="21dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
+
+<!--        <Button-->
+<!--            android:id="@+id/edit_data"-->
+<!--            android:layout_width="208dp"-->
+<!--            android:layout_height="70dp"-->
+<!--            android:background="@color/gray"-->
+<!--            android:fontFamily="@font/montserrat_bold"-->
+<!--            android:text="@string/edit_data"-->
+<!--            android:textSize="15sp"-->
+<!--            />-->
+
+        <Button
+            android:id="@+id/backBtn"
+            android:layout_width="208dp"
+            android:layout_height="70dp"
+            android:background="@color/gray"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="@string/back_btn" />
+
+
+    </LinearLayout>
+</RelativeLayout>

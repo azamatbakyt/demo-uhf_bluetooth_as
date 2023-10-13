@@ -31,6 +31,7 @@ import com.example.uhf_bt.Models.TagData;
 import com.example.uhf_bt.fragment.BarcodeFragment;
 import com.example.uhf_bt.fragment.InventoryFragment1C;
 import com.example.uhf_bt.fragment.SetUser;
+import com.example.uhf_bt.fragment.UHFInventoryFragment;
 import com.example.uhf_bt.fragment.UHFReadTagFragment;
 import com.example.uhf_bt.fragment.UHFSetFragment;
 //import com.example.uhf_bt.fragment.UHFUpdataFragment;
@@ -578,7 +579,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_setUser)).setIndicator(getString(R.string.title_setUser)), SetUser.class, null);
         mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_marking)).setIndicator(getString(R.string.title_marking)), UHFReadTagFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_inventory)).setIndicator(getString(R.string.title_inventory)), InventoryFragment1C.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_inventory)).setIndicator(getString(R.string.title_inventory)), UHFInventoryFragment.class, null);
 
 //        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_inventory2)).setIndicator(getString(R.string.title_inventory2)), UHFNewReadTagFragment.class, null);
 

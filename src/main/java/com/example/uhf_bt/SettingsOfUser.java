@@ -8,13 +8,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.uhf_bt.Models.Executor;
 import com.example.uhf_bt.Models.TagData;
 
 public class SettingsOfUser extends AppCompatActivity {
 
-    private EditText set_facility,
-            set_premise,
-            set_executor;
+    private EditText setUserRole,
+            setUserName,
+            setUserNote;
     private Button save_user;
 
     private DataBase db;
@@ -24,19 +25,19 @@ public class SettingsOfUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_of_user);
 
-        set_facility = this.findViewById(R.id.setFacility);
-        set_premise = this.findViewById(R.id.setPremise);
-        set_executor = this.findViewById(R.id.setExecutor);
+        setUserRole = this.findViewById(R.id.setUserRole);
+        setUserName = this.findViewById(R.id.setNameOfUser);
+        setUserNote = this.findViewById(R.id.setNote);
         save_user = this.findViewById(R.id.save_user);
         db = new DataBase(this);
         save_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TagData tagData = new TagData();
-                tagData.setFacility(set_facility.getText().toString());
-                tagData.setPremise(set_premise.getText().toString());
-                tagData.setExecutor(set_executor.getText().toString());
-                if (db.insertUser(tagData)) {
+                Executor executor = new Executor();
+                executor.setRole(setUserRole.getText().toString());
+                executor.setName(setUserName.getText().toString());
+                executor.setNotation(setUserNote.getText().toString());
+                if (db.insertUser(executor)) {
                     Toast.makeText(SettingsOfUser.this, "Данные добавлены", Toast.LENGTH_SHORT).show();
                 }
                 db.close();
