@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#252A36"
-    tools:context=".SettingsOfUser">
+    tools:context=".InsertFacility">
 
     <ImageView
         android:id="@+id/default_photo"
@@ -17,7 +17,7 @@
 
 
     <TextView
-        android:id="@+id/userSettings"
+        android:id="@+id/facility"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@+id/default_photo"
@@ -25,7 +25,7 @@
         android:background="#BE6731"
         android:fontFamily="@font/montserrat_bold"
         android:gravity="center"
-        android:text="@string/userSettings"
+        android:text="@string/FacilitySettings"
         android:textColor="@color/white"
         android:textSize="17sp" />
 
@@ -33,20 +33,20 @@
         android:id="@+id/linear_layout_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/userSettings"
+        android:layout_below="@+id/facility"
         android:layout_marginHorizontal="15dp"
         android:orientation="vertical"
         android:padding="10dp">
 
         <EditText
-            android:id="@+id/setUserRole"
+            android:id="@+id/setFacilityName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:backgroundTint="@color/white_e0"
             android:ems="10"
             android:fontFamily="@font/montserrat_bold"
-            android:hint="@string/userRole"
+            android:hint="@string/enter_facility"
             android:inputType="text"
             android:maxLength="100"
             android:textColor="@color/white"
@@ -56,14 +56,14 @@
 
 
         <EditText
-            android:id="@+id/setNameOfUser"
+            android:id="@+id/setFacilityAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:backgroundTint="@color/white_e0"
             android:ems="10"
             android:fontFamily="@font/montserrat_bold"
-            android:hint="@string/nameOfUser"
+            android:hint="@string/enterFacilityAddress"
             android:inputType="text"
             android:maxLength="30"
             android:textColor="@color/white"
@@ -73,14 +73,14 @@
 
 
         <EditText
-            android:id="@+id/setNote"
+            android:id="@+id/setFacilityNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:backgroundTint="@color/white_e0"
             android:ems="10"
             android:fontFamily="@font/montserrat_bold"
-            android:hint="@string/userNotation"
+            android:hint="@string/enterFacilityNote"
             android:inputType="text"
             android:maxLength="20"
             android:textColor="@color/white"
@@ -90,7 +90,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/save_user"
+        android:id="@+id/save_facility"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_below="@+id/linear_layout_2"

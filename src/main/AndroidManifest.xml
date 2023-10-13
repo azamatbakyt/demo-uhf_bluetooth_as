@@ -24,6 +24,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat">
         <activity
+            android:name=".TagDetailInfo"
+            android:exported="false" />
+        <activity
+            android:name=".InsertPremise"
+            android:exported="false" />
+        <activity
+            android:name=".insertPremise"
+            android:exported="false" />
+        <activity
+            android:name=".InsertFacility"
+            android:exported="false" />
+        <activity
+            android:name=".insertFacility"
+            android:exported="false"
+            android:label="@string/title_activity_insert_facility"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
             android:name=".SettingsOfUser"
             android:exported="false" />
         <activity

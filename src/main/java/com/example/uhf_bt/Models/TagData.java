@@ -10,6 +10,9 @@ public class TagData {
     private String inventoryNumber;
     private String nomenclature;
     private String dateTimeFormatter;
+
+    private int facility_id;
+    private int premise_id;
     private String facility;
     private String premise;
     private String executor;
@@ -148,6 +151,22 @@ public class TagData {
 
     public void setDateTimeFormatter(String dateTimeFormatter) {
         this.dateTimeFormatter = dateTimeFormatter;
+    }
+
+    public int getFacility_id() {
+        return facility_id;
+    }
+
+    public void setFacility_id(int facility_id) {
+        this.facility_id = facility_id;
+    }
+
+    public int getPremise_id() {
+        return premise_id;
+    }
+
+    public void setPremise_id(int premise_id) {
+        this.premise_id = premise_id;
     }
 
     @Override

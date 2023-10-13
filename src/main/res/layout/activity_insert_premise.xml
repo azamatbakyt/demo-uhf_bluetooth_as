@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#252A36"
-    tools:context=".SettingsOfUser">
+    tools:context=".InsertPremise">
 
     <ImageView
         android:id="@+id/default_photo"
@@ -17,7 +17,7 @@
 
 
     <TextView
-        android:id="@+id/userSettings"
+        android:id="@+id/premise"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@+id/default_photo"
@@ -25,7 +25,7 @@
         android:background="#BE6731"
         android:fontFamily="@font/montserrat_bold"
         android:gravity="center"
-        android:text="@string/userSettings"
+        android:text="@string/premiseSettings"
         android:textColor="@color/white"
         android:textSize="17sp" />
 
@@ -33,37 +33,42 @@
         android:id="@+id/linear_layout_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/userSettings"
+        android:layout_below="@+id/premise"
         android:layout_marginHorizontal="15dp"
         android:orientation="vertical"
         android:padding="10dp">
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/facilityName"
+                android:textSize="20sp" />
+
+            <Spinner
+                android:id="@+id/spnPremiseGet"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:gravity="center_horizontal" />
+        </LinearLayout>
+
+
         <EditText
-            android:id="@+id/setUserRole"
+            android:id="@+id/setPremiseName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:backgroundTint="@color/white_e0"
             android:ems="10"
             android:fontFamily="@font/montserrat_bold"
-            android:hint="@string/userRole"
-            android:inputType="text"
-            android:maxLength="100"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
-            android:textSize="22sp"
-            android:importantForAutofill="no" />
-
-
-        <EditText
-            android:id="@+id/setNameOfUser"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:backgroundTint="@color/white_e0"
-            android:ems="10"
-            android:fontFamily="@font/montserrat_bold"
-            android:hint="@string/nameOfUser"
+            android:hint="@string/enterPremiseName"
             android:inputType="text"
             android:maxLength="30"
             android:textColor="@color/white"
@@ -73,14 +78,14 @@
 
 
         <EditText
-            android:id="@+id/setNote"
+            android:id="@+id/setPremiseNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:backgroundTint="@color/white_e0"
             android:ems="10"
             android:fontFamily="@font/montserrat_bold"
-            android:hint="@string/userNotation"
+            android:hint="@string/enterPremiseNote"
             android:inputType="text"
             android:maxLength="20"
             android:textColor="@color/white"
@@ -90,7 +95,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/save_user"
+        android:id="@+id/save_premise"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_below="@+id/linear_layout_2"
