@@ -1,5 +1,6 @@
 package com.example.uhf_bt.fragment;
 
+import static com.example.uhf_bt.fragment.BTRenameFragment.isExit_;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,145 +10,198 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.uhf_bt.AdapterRecord;
+import com.example.uhf_bt.DataBase;
 import com.example.uhf_bt.MainActivity;
+import com.example.uhf_bt.Models.TagData;
 import com.example.uhf_bt.R;
 import com.example.uhf_bt.Utils;
 import com.rscja.deviceapi.RFIDWithUHFBLE;
 import com.rscja.deviceapi.interfaces.ConnectionStatus;
 import com.rscja.deviceapi.interfaces.KeyEventCallback;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import android.os.AsyncTask;
 
-public class BarcodeFragment extends Fragment implements View.OnClickListener{
+public class BarcodeFragment extends Fragment implements View.OnClickListener {
+    private AdapterRecord adapterRecord;
+    private DataBase db;
+    private List<TagData> tagDataList;
+    private RecyclerView barcodeRv;
+    private MainActivity mContext;
+    private Spinner spingCodingFormat;
+    private TextView tvData;
+    private Button btnScan, btClear;
+    private static final int MAX_DATA_LENGTH = 4096; // Максимальная длина данных в TextView
+    private static final String NEWLINE = "\r\n";
 
-
-    static boolean isExit_=false;
-    MainActivity mContext;
-    ScrollView scrBarcode;
-    TextView tvData;
-    Button btnScan,btClear;
-    Object lock=new Object();
-    Spinner spingCodingFormat;
-
-    Handler handler=new Handler(){
+    Handler handler = new Handler(new Handler.Callback() {
         @Override
-        public void handleMessage(Message msg) {
-            if(msg.obj.toString()!=null) {
-                tvData.setText(tvData.getText() + msg.obj.toString() + "\r\n");
-                scroll2Bottom(scrBarcode, tvData);
-                Utils.playSound(1);
-            }
+        public boolean handleMessage(Message msg) {
+            String data = msg.obj.toString();
+            appendDataToTextView(data);
+            Utils.playSound(1);
+            return true;
         }
-    };
+    });
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_barcode, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_barcode, container, false);
+        barcodeRv = rootView.findViewById(R.id.barcodeRv);
+        tagDataList = new ArrayList<>();
+        barcodeRv.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+
+
+        tvData = rootView.findViewById(R.id.tvData);
+        return rootView;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        isExit_=false;
-         scrBarcode=(ScrollView)getActivity().findViewById(R.id.scrBarcode);
-         tvData=(TextView)getActivity().findViewById(R.id.tvData);
-         btnScan=(Button)getActivity().findViewById(R.id.btnScan);
-          btClear=(Button)getActivity().findViewById(R.id.btClear);
-         btnScan.setOnClickListener(this);
-         btClear.setOnClickListener(this);
-         spingCodingFormat=(Spinner)getActivity().findViewById(R.id.spingCodingFormat);
-         mContext=(MainActivity) getActivity();
-         mContext.uhf.setKeyEventCallback(new KeyEventCallback() {
-             @Override
-             public void onKeyDown(int keycode) {
-                 Log.d("DeviceAPI_setKeyEvent","  keycode ="+keycode +"   ,isExit_="+isExit_);
-                 if(!isExit_ && mContext.uhf.getConnectStatus() == ConnectionStatus.CONNECTED)
-                     scan();
-             }
-         });
+        initViews();
+        initListeners();
+        mContext = (MainActivity) getActivity();
+        adapterRecord = new AdapterRecord(mContext, tagDataList);
+        db = new DataBase(getActivity());
+        tagDataList = new ArrayList<>();
+
+        handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                String data = msg.obj.toString();
+                appendDataToTextView(data);
+                Utils.playSound(1);
+                return true;
+            }
+        });
+
+        mContext.uhf.setKeyEventCallback(new KeyEventCallback() {
+            @Override
+            public void onKeyDown(int keycode) {
+                if (!isExit_ && mContext.uhf.getConnectStatus() == ConnectionStatus.CONNECTED) {
+                    scan();
+                }
+            }
+        });
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        isExit_=true;
+        isExit_ = true;
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btnScan:
                 scan();
                 break;
             case R.id.btClear:
-                tvData.setText("");
+                clearTextView();
                 break;
         }
     }
 
-
-    private synchronized void scan(){
-       if(!isRuning){
-           isRuning=true;
-           new ScanThread().start();
-       }
+    private void initViews() {
+        btnScan = getView().findViewById(R.id.btnScan);
+        btClear = getView().findViewById(R.id.btClear);
+        spingCodingFormat = getView().findViewById(R.id.spingCodingFormat);
     }
 
-    boolean isRuning=false;
-    class   ScanThread  extends Thread{
-       public void run(){
-           String data=null;
-           byte[] temp=mContext.uhf.scanBarcodeToBytes();
-           if(temp!=null) {
-               if (spingCodingFormat.getSelectedItemPosition() == 1) {
-                   try {
-                       data = new String(temp, "utf8");
-                   } catch (Exception ex) {
-                   }
-               } else if (spingCodingFormat.getSelectedItemPosition() == 2) {
-                   try {
-                       data = new String(temp, "gb2312");
-                   } catch (Exception ex) {
-                   }
-               } else {
-                   data = new String(temp);
-               }
+    private void initListeners() {
+        btnScan.setOnClickListener(this);
+        btClear.setOnClickListener(this);
+    }
 
-               if (data != null && !data.isEmpty()) {
-                   Log.d("DeviceAPI_setKeyEvent","data="+data);
-                   Message msg = Message.obtain();
-                   msg.obj = data;
-                   handler.sendMessage(msg);
-               }
-           }
-           isRuning=false;
-       }
-   }
+    private synchronized void scan() {
+        if (!isRuning) {
+            isRuning = true;
+            new ScanTask().start();
+        }
+    }
 
-    public static void scroll2Bottom(final ScrollView scroll, final View inner) {
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
+    private boolean isRuning = false;
 
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                if (scroll == null || inner == null) {
-                    return;
+    private class ScanTask extends Thread {
+        @Override
+        public void run() {
+            String data = null;
+            String example = "4820024700016";
+            byte[] temp = example.getBytes();
+            if (temp != null) {
+                if (spingCodingFormat.getSelectedItemPosition() == 1) {
+                    try {
+                        data = new String(temp, "utf8");
+
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                    }
                 }
-                // 内层高度超过外层
-                int offset = inner.getMeasuredHeight()
-                        - scroll.getMeasuredHeight();
-                if (offset < 0) {
-                    offset = 0;
+            } else if (spingCodingFormat.getSelectedItemPosition() == 2) {
+                try {
+                    data = new String(temp, "gb2312");
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
                 }
-                scroll.scrollTo(0, offset);
+            } else {
+                data = new String(temp);
             }
-        });
 
+            if (data != null && !data.isEmpty()) {
+                Log.d("DeviceAPI_setKeyEvent", "data=" + data);
+                List<TagData> taglist = db.getDataByEpc(data);
+                Message msg = Message.obtain();
+                msg.obj = data;
+                handler.sendMessage(msg);
+//                updateAdapterData(data);
+            }
+
+            isRuning = false;
+        }
     }
+
+    private void clearTextView() {
+        adapterRecord.clearData();
+    }
+
+    private void appendDataToTextView(String data) {
+        if (data != null) {
+            List<TagData> taglist = db.getDataByEpcForInventory(data);
+            if (!(taglist.isEmpty())) {
+                TagData tagData = new TagData();
+                tagData.setNomenclature(taglist.get(0).getNomenclature());
+                tagData.setEpc(data);
+                tagData.setDescription(taglist.get(0).getDescription());
+                tagData.setType("Barcode");
+                tagData.setAmount(taglist.get(0).getAmount());
+                tagDataList.add(tagData);
+                adapterRecord.updateData(tagDataList);
+                barcodeRv.setAdapter(adapterRecord);
+            } else {
+                TagData tagData = new TagData();
+                tagData.setNomenclature("Null");
+                tagData.setEpc(data);
+                tagData.setDescription("Null");
+                tagData.setType("Barcode");
+                tagData.setAmount(0);
+                tagDataList.add(tagData);
+                adapterRecord.updateData(tagDataList);
+                barcodeRv.setAdapter(adapterRecord);
+            }
+        }
+    }
+    
 }

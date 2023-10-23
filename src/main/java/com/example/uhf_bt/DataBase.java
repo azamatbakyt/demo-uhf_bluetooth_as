@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import com.example.uhf_bt.Models.Executor;
 import com.example.uhf_bt.Models.Facility;
-import com.example.uhf_bt.Models.FacilityAndPremiseRelations;
 import com.example.uhf_bt.Models.Premise;
 import com.example.uhf_bt.Models.TagData;
 
@@ -22,7 +21,7 @@ import java.util.List;
 public class DataBase extends SQLiteOpenHelper {
 
     private static final String db_name = "rfidCounter";
-    private static final int db_version = 21;
+    private static final int db_version = 45;
     private static final String db_table = "marking";
 
     //columns
@@ -44,11 +43,6 @@ public class DataBase extends SQLiteOpenHelper {
 
 
 
-    //
-    private final static String db_table_relations = "object_room_relations";
-    private final static String db_object_id = "object_id";
-    private final static String db_room_id = "room_id";
-
     //user table
     private final static String dbUserTable = "executors";
     private final static String db_user_id = "id";
@@ -58,15 +52,15 @@ public class DataBase extends SQLiteOpenHelper {
 
 
     // facility table
-    private final static String db_facility_table = "facilities";
-    private final static String db_facility_id = "id";
+    private final static String db_facilityTable = "facilities";
+    private final static String db_facility_id = "facility_id";
     private final static String db_facility_name = "name";
     private final static String db_facility_address = "address";
     private final static String db_facility_note = "note";
 
 
     // premise table
-    private final static String db_premise_table = "premises";
+    private final static String db_premiseTable = "premises";
     private final static String db_premise_id = "id";
     private final static String db_premise_name = "name";
     private final static String db_premise_note = "note";
@@ -79,22 +73,25 @@ public class DataBase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         try {
+
             String query = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s INTEGER);",
                     db_table, db_id, db_epc, db_type, db_description, db_inventory_number, db_nomenclature, db_amount);
             String queryInventory = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT," +
-                            " %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s INTEGER, %s TEXT, %s TEXT, %s TEXT, %s TEXT)",
+                            " %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s INTEGER, %s TEXT, %s TEXT, %s TEXT, %s TEXT);",
                     db_table_inventory, db_id, db_epc, db_type, db_description, db_inventory_number, db_nomenclature, db_amount,
                     db_facility, db_premise, db_date, db_executor);
-            String queryRelations = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s INTEGER AUTOINCREMENT, %s INTEGER);",
-                    db_table_relations, db_id, db_object_id, db_room_id);
 
-            String queryFacility = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s INTEGER);",
-                    db_facility_table,
-                    db_facility_id, db_facility_name, db_facility_address, db_facility_note, db_object_id);
+            String queryFacility = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT);",
+                    db_facilityTable,
+                    db_facility_id, db_facility_name, db_facility_address, db_facility_note);
 
-            String queryPremise = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s INTEGER);",
-                    db_premise_table,
-                    db_premise_id, db_premise_name, db_premise_note, db_room_id);
+            String queryPremise = "CREATE TABLE premises " + "(" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "facility_id INTEGER NOT NULL, " +
+                            "name TEXT NOT NULL, " +
+                            "note TEXT, " +
+                            "FOREIGN KEY(facility_id) REFERENCES facilities(facility_id) ON DELETE CASCADE" +
+                            ");";
 
             String queryUser = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT);",
                     dbUserTable,
@@ -104,7 +101,6 @@ public class DataBase extends SQLiteOpenHelper {
             db.execSQL(queryUser);
             db.execSQL(queryFacility);
             db.execSQL(queryInventory);
-            db.execSQL(queryRelations);
             db.execSQL(queryPremise);
 
             Log.d("DataBase", "onCreate called");
@@ -116,16 +112,16 @@ public class DataBase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String query = String.format("DROP TABLE IF EXISTS %s", db_table);
+        String queryMarking = String.format("DROP TABLE IF EXISTS %s", db_table);
         String queryUsers = String.format("DROP TABLE IF EXISTS %s", dbUserTable);
-        String queryRelations = String.format("DROP TABLE IF EXISTS %s", db_table_relations);
-        String queryFacility = String.format("DROP TABLE IF EXISTS %s", db_facility_table);
-        String queryPremise = String.format("DROP TABLE IF EXISTS %s", db_premise_table);
-        db.execSQL(query);
+        String queryInventory = String.format("DROP TABLE IF EXISTS %s", db_table_inventory);
+        String queryFacility = String.format("DROP TABLE IF EXISTS %s", db_facilityTable);
+        String queryPremise = String.format("DROP TABLE IF EXISTS %s", db_premiseTable);
+        db.execSQL(queryMarking);
         db.execSQL(queryFacility);
+        db.execSQL(queryInventory);
         db.execSQL(queryPremise);
         db.execSQL(queryUsers);
-        db.execSQL(queryRelations);
         onCreate(db);
     }
 
@@ -176,7 +172,7 @@ public class DataBase extends SQLiteOpenHelper {
         List<TagData> tagDataList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT type, description, inventory_number, nomenclature, amount, facility, premise, executor FROM "
-                + db_table + " WHERE " + db_epc + " = ?";
+                + db_table_inventory + " WHERE " + db_epc + " = ?";
         Cursor cursor = db.rawQuery(selectQuery, new String[]{epc});
         if (cursor.moveToFirst()) {
             do {
@@ -245,11 +241,29 @@ public class DataBase extends SQLiteOpenHelper {
         values.put(db_description, tagData.getDescription());
         values.put(db_inventory_number, tagData.getInventoryNumber());
         values.put(db_nomenclature, tagData.getNomenclature());
-
+        values.put(db_amount, tagData.getAmount());
         String whereClause = db_epc + "=?";
         String[] whereArgs = {epc};
 
         int result = db.update(db_table, values, whereClause, whereArgs);
+
+        db.close();
+
+        return result > 0;
+    }
+
+    public boolean updateDataInInventory(TagData tagData, String epc) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(db_description, tagData.getDescription());
+        values.put(db_inventory_number, tagData.getInventoryNumber());
+        values.put(db_nomenclature, tagData.getNomenclature());
+        values.put(db_amount, tagData.getAmount());
+        String whereClause = db_epc + "=?";
+        String[] whereArgs = {epc};
+
+        int result = db.update(db_table_inventory, values, whereClause, whereArgs);
 
         db.close();
 
@@ -279,28 +293,6 @@ public class DataBase extends SQLiteOpenHelper {
         return data;
     }
 
-//    public boolean insertUser(Facility facility, Premise premise, FacilityAndPremiseRelations relations) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues valuesFacility = new ContentValues();
-//        ContentValues valuesPremise = new ContentValues();
-//        ContentValues valuesRelations = new ContentValues();
-//
-//        valuesFacility.put(db_facility_name, tagData.getExecutor());
-//        valuesFacility.put(db_facility_description, tagData.getFacility());
-//
-//        valuesPremise.put(db_premise_name, );
-//        valuesPremise.put(db_premise_description, );
-//
-//        valuesRelations.put(db_object_id, facility.getId());
-//        valuesRelations.put(db_room_id, premise.getId());
-//
-//        long result2 = db.insert(db_table_relations, null, values);
-//        db.close();
-//        if (result == -1)
-//            return false;
-//        else
-//            return true;
-//    }
 
     public boolean insertUser(Executor executor) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -344,32 +336,30 @@ public class DataBase extends SQLiteOpenHelper {
         ContentValues valuesFacility = new ContentValues();
         ContentValues valuesForRelations = new ContentValues();
 
-
         valuesFacility.put(db_facility_name, facility.getName());
         valuesFacility.put(db_facility_address, facility.getAddress());
         valuesFacility.put(db_facility_note, facility.getNote());
 
-        valuesForRelations.put(db_object_id, facility.getId());
-
         ContentValues valuesForInventory = new ContentValues();
         valuesForInventory.put(db_facility, facility.getName());
-        long result = db.insert(db_facility_table, null, valuesFacility);
+        long result = db.insert(db_facilityTable, null, valuesFacility);
         long result2 = db.insert(db_table_inventory, null, valuesForInventory);
-        long result3 = db.insert(db_table_relations, null, valuesForRelations);
         if (result == -1 && result2 == -1)
             return false;
         else
             return true;
     }
 
-    public List<String> getFacilities() {
-        List<String> facilities = new ArrayList<>();
+    public List<Facility> getFacilities() {
+        List<Facility> facilities = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String select = "SELECT " + db_facility_name + " FROM " + db_facility_table;
+        String select = "SELECT " + db_facility_id + ", " + db_facility_name + " FROM " + db_facilityTable;
         Cursor cursor = db.rawQuery(select, null);
         if (cursor.moveToFirst()) {
             do {
-                String facility = cursor.getString(cursor.getColumnIndex(db_facility_name));
+                Facility facility = new Facility();
+                facility.setId(cursor.getInt(cursor.getColumnIndex(db_facility_id)));
+                facility.setName(cursor.getString(cursor.getColumnIndex(db_facility_name)));
                 facilities.add(facility);
             } while (cursor.moveToNext());
         }
@@ -378,23 +368,17 @@ public class DataBase extends SQLiteOpenHelper {
 
         return facilities;
     }
-
-    public boolean insertPremise(Premise premise) {
+    public boolean insertPremise(Premise premise, int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues valuesPremises = new ContentValues();
         ContentValues valuesForInventory = new ContentValues();
-        ContentValues valuesForRelations = new ContentValues();
-        premise.setId(Integer.parseInt(db_object_id));
+        valuesPremises.put(db_facility_id, id);
         valuesPremises.put(db_premise_name, premise.getName());
         valuesPremises.put(db_premise_note, premise.getNote());
-
-        valuesForRelations.put(db_room_id, premise.getId());
-
         valuesForInventory.put(db_premise, premise.getName());
 
-        long result = db.insert(db_premise_table, null, valuesPremises);
+        long result = db.insert(db_premiseTable, null, valuesPremises);
         long result2 = db.insert(db_table_inventory, null, valuesForInventory);
-        long result3 = db.insert(db_table_relations, null, valuesForRelations);
         if (result == -1 && result2 == -1)
             return false;
         else
@@ -402,41 +386,41 @@ public class DataBase extends SQLiteOpenHelper {
 
     }
 
-    public List<String> getRoomsByObject(int objectId) {
-        List<String> rooms = new ArrayList<>();
+    public List<Premise> getPremisesByFacility(int facilityId) {
+        List<Premise> premises = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String selectQuery = "SELECT " + db_premise_name + " FROM " + db_premise_table +
-                " WHERE " + db_premise_id + " IN (SELECT " + db_room_id + " FROM " + db_table_relations +
-                " WHERE " + db_object_id + " = " + objectId + ")";
-        Cursor cursor = db.rawQuery(selectQuery, null);
+        String select = "SELECT " + db_premise_name + " FROM " + db_premiseTable +
+                " WHERE " + db_facility_id + " = " + facilityId;
+        Cursor cursor = db.rawQuery(select, null);
 
         if (cursor.moveToFirst()) {
             do {
-                String roomName = cursor.getString(cursor.getColumnIndex(db_premise_name));
-                rooms.add(roomName);
+                Premise premise = new Premise();
+                premise.setName(cursor.getString(cursor.getColumnIndex(db_premise_name)));
+                premises.add(premise);
             } while (cursor.moveToNext());
         }
-
         cursor.close();
         db.close();
 
-        return rooms;
-
+        return premises;
     }
 
-    public boolean insertObjectRoomRelation(int objectId, int roomId) {
+    public boolean insertBarcode(TagData barcode, String barcodeData){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(db_object_id, objectId);
-        values.put(db_room_id, roomId);
-
-        long result = db.insert(db_table_relations, null, values);
-        db.close();
-
-        if (result == -1){
+        values.put(db_nomenclature, barcode.getNomenclature());
+        values.put(db_amount, barcode.getAmount());
+        values.put(db_description, barcode.getDescription());
+        values.put(db_epc, barcodeData);
+        values.put(db_type, barcode.getType());
+        values.put(db_inventory_number, barcode.getInventoryNumber());
+        long result = db.insert(db_table_inventory, null, values);
+        if (result == -1 )
             return false;
-        } else
+        else
             return true;
     }
+
 
 }

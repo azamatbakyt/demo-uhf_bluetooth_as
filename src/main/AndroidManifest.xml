@@ -24,6 +24,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat">
         <activity
+            android:name=".AddingBarcodeData"
+            android:exported="false" />
+        <activity
+            android:name=".BarcodeData"
+            android:exported="false" />
+        <activity
             android:name=".TagDetailInfo"
             android:exported="false" />
         <activity

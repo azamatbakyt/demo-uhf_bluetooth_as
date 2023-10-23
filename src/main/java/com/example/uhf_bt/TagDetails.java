@@ -32,7 +32,7 @@ public class TagDetails extends AppCompatActivity {
 
     public String tagData;
 
-    private boolean flag;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

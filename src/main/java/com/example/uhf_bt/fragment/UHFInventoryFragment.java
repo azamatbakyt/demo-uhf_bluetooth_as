@@ -28,7 +28,6 @@ import com.example.uhf_bt.FileUtils;
 import com.example.uhf_bt.MainActivity;
 import com.example.uhf_bt.NumberTool;
 import com.example.uhf_bt.R;
-import com.example.uhf_bt.TagDetailInfo;
 import com.example.uhf_bt.TagDetails;
 import com.example.uhf_bt.Utils;
 import com.rscja.deviceapi.RFIDWithUHFUART;
@@ -50,6 +49,7 @@ import androidx.fragment.app.Fragment;
 public class UHFInventoryFragment extends Fragment implements View.OnClickListener {
 
     private DataBase db;
+    private TagDetails isCheckedTag;
     private String TAG = "UHFReadTagFragment";
     private CheckBox marked;
 
@@ -66,6 +66,7 @@ public class UHFInventoryFragment extends Fragment implements View.OnClickListen
     private HashMap<String, String> tagMap = new HashMap<>();
     private List<String> tempDatas = new ArrayList<>();
     private ArrayList<HashMap<String, String>> tagList;
+
     private ConnectStatus mConnectStatus = new ConnectStatus();
 
     //--------------------------------------获取 解析数据-------------------------------------------------
@@ -130,7 +131,7 @@ public class UHFInventoryFragment extends Fragment implements View.OnClickListen
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_uhfread_tag, container, false);
+        View view = inflater.inflate(R.layout.fragment_u_h_f_inventory, container, false);
         initFilter(view);
         return view;
     }
@@ -230,8 +231,8 @@ public class UHFInventoryFragment extends Fragment implements View.OnClickListen
                 String tagRssi = selectedTag.get(MainActivity.TAG_RSSI);
 
 
-                Intent intent = new Intent(getContext(), TagDetailInfo.class);
-                intent.putExtra("tag", tagData);
+                Intent intent = new Intent(getContext(), TagDetails.class);
+                intent.putExtra("tagData", tagData);
                 intent.putExtra("tagLen", tagLen);
                 intent.putExtra("tagCount", tagCount);
                 intent.putExtra("tagRssi", tagRssi);
@@ -444,10 +445,10 @@ public class UHFInventoryFragment extends Fragment implements View.OnClickListen
         }
         isRuning = true;
         cbFilter.setChecked(false);
-        new TagThread().start();
+        new TagInventoryThread().start();
     }
 
-    class TagThread extends Thread {
+    class TagInventoryThread extends Thread {
 
         public void run() {
             Message msg = handler.obtainMessage(FLAG_START);

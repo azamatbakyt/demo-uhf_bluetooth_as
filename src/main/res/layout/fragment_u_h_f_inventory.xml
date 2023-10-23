@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.uhf_bt.fragment.UHFReadTagFragment">
+    tools:context="com.example.uhf_bt.fragment.UHFInventoryFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,8 +23,7 @@
             android:background="@drawable/rectangle_bg"
             android:orientation="vertical"
             android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:backgroundTint="#252A36">
+            android:paddingRight="8dp">
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -85,6 +84,64 @@
                     android:inputType="textNoSuggestions"
                     android:singleLine="true" />
             </LinearLayout>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbEPC"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rb_bg"
+                    android:button="@null"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:text="EPC"
+                    android:textColor="@drawable/check_text_color" />
+
+                <RadioButton
+                    android:id="@+id/rbTID"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rb_bg"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:text="TID"
+                    android:textColor="@drawable/check_text_color" />
+
+                <RadioButton
+                    android:id="@+id/rbUser"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rb_bg"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:text="USER"
+                    android:textColor="@drawable/check_text_color" />
+
+                <RadioButton
+                    android:id="@+id/rbRESERVED"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rb_bg"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:text="RESERVED"
+                    android:textColor="@drawable/check_text_color"
+                    android:visibility="gone" />
+            </RadioGroup>
 
             <LinearLayout
                 android:layout_width="fill_parent"

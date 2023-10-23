@@ -1144,4 +1144,5 @@
     <string name="enterPremiseNote">Enter note</string>
     <string name="setPremise">Set Premise</string>
     <string name="setFacility">Set Facility</string>
+    <string name="insert_amount">INSERT AMOUNT</string>
 </resources>
