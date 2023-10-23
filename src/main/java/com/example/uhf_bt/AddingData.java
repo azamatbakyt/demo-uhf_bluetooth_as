@@ -26,7 +26,6 @@ public class AddingData extends AppCompatActivity {
     private Button save_btn;
     private DataBase dataBase;
 
-    private TagDetails tagDetails;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

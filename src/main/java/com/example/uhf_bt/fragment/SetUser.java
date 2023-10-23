@@ -9,14 +9,17 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.uhf_bt.DataBase;
 import com.example.uhf_bt.InsertFacility;
 import com.example.uhf_bt.InsertPremise;
 import com.example.uhf_bt.MainActivity;
+import com.example.uhf_bt.Models.Facility;
 import com.example.uhf_bt.Models.Premise;
 import com.example.uhf_bt.R;
 import com.example.uhf_bt.SettingsOfUser;
@@ -91,27 +94,34 @@ public class SetUser extends Fragment {
     }
 
     public void fillSpinner() {
-        List<String> facilities = db.getFacilities();
-        ArrayAdapter<String> facilityAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, facilities);
-
-        // Получаем выбранный элемент из спиннера spnFacility
-        String selectedFacility = (String) spnFacility.getSelectedItem();
-
-        if (selectedFacility != null) {
-            // Убеждаемся, что строка не равна null, прежде чем преобразовывать ее в целое число
-            int id = Integer.parseInt(selectedFacility);
-
-            // Используйте id для дальнейших действий
-            List<String> premises = db.getRoomsByObject(id);
-            ArrayAdapter<String> premiseAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, premises);
-            spnPremise.setAdapter(premiseAdapter);
-        }
-
-        List<String> executors = db.getUsers();
-        ArrayAdapter<String> executorAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, executors);
-
+        List<Facility> facilities = db.getFacilities();
+        ArrayAdapter<Facility> facilityAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, facilities);
         spnFacility.setAdapter(facilityAdapter);
-        spnUser.setAdapter(executorAdapter);
+
+        spnFacility.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // When a facility is selected, get the corresponding premises and users
+                Facility selectedFacility = (Facility) parentView.getItemAtPosition(position);
+                if (selectedFacility != null) {
+                    int facility_id = selectedFacility.getId();
+                    // Get premises for the selected facility
+                    List<Premise> premises = db.getPremisesByFacility(facility_id);
+                    ArrayAdapter<Premise> premiseAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, premises);
+                    spnPremise.setAdapter(premiseAdapter);
+
+                    // Get users
+                    List<String> executors = db.getUsers();
+                    ArrayAdapter<String> executorAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, executors);
+                    spnUser.setAdapter(executorAdapter);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                Toast.makeText(context, "You have to choose", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 
