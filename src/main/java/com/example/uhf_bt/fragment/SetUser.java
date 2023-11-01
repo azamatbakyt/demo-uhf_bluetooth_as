@@ -114,8 +114,11 @@ public class SetUser extends Fragment {
                     List<String> executors = db.getUsers();
                     ArrayAdapter<String> executorAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, executors);
                     spnUser.setAdapter(executorAdapter);
+
                 }
             }
+
+
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {

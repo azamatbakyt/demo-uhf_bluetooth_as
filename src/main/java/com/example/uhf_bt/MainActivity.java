@@ -27,14 +27,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTabHost;
+
 import com.example.uhf_bt.Models.TagData;
 import com.example.uhf_bt.fragment.BarcodeFragment;
-import com.example.uhf_bt.fragment.InventoryFragment1C;
 import com.example.uhf_bt.fragment.SetUser;
 import com.example.uhf_bt.fragment.UHFInventoryFragment;
 import com.example.uhf_bt.fragment.UHFReadTagFragment;
 import com.example.uhf_bt.fragment.UHFSetFragment;
-//import com.example.uhf_bt.fragment.UHFUpdataFragment;
 import com.opencsv.CSVReader;
 import com.rscja.deviceapi.RFIDWithUHFBLE;
 import com.rscja.deviceapi.interfaces.ConnectionStatus;
@@ -48,12 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTabHost;
 
 import no.nordicsemi.android.dfu.BuildConfig;
 
@@ -272,9 +270,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             } else if (item.getItemId() == R.id.restore_action) {
                 // restore all records from csv file
                 if (checkStoragePermission()) {
-                    // permission allowed
-                    updateInventoryFragment();
+
                     importCSV();
+                    onResume();
                 } else {
                     // permission denied
                     requestStoragePermissionImport();
@@ -521,42 +519,54 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void importCSV() {
-        String filePathAndName = Environment.getExternalStorageDirectory() + "/SQLiteBackup/" + csvFileName;
-        File csvFile = new File(filePathAndName);
+//        String filePathAndName = Environment.getExternalStorageDirectory() + "/SQLiteBackup/" + csvFileName;
+//        File csvFile = new File(filePathAndName);
+//
+//        // check if exists or not
+//        if (csvFile.exists()) {
+//
+//            try {
+//                CSVReader reader = new CSVReader(new FileReader(csvFile.getAbsolutePath()));
+//                String[] nextLine;
+//                while ((nextLine = reader.readNext()) != null) {
+//                    String id = nextLine[0];
+//                    String epc = nextLine[1];
+//                    String type = nextLine[2];
+//                    String description = nextLine[3];
+//                    String inventory_number = nextLine[4];
+//                    String nomenclature = nextLine[5];
+//                    String amount = nextLine[6];
+//                    String facility = nextLine[7];
+//                    String premise = nextLine[8];
+//                    String dateTime = nextLine[9];
+//                    String executor = nextLine[10];
+//                    TagData tagData = new TagData(
+//                            "" + id,
+//                            "" + epc,
+//                            "" + type,
+//                            "" + description,
+//                            "" + inventory_number,
+//                            "" + nomenclature,
+//                            Integer.parseInt(amount),
+//                            "" + facility,
+//                            "" + premise,
+//                            "" + dateTime,
+//                            "" + executor
+//                    );
+//                    if (db.importDataFrom1C(tagData))
+//                        Toast.makeText(this, "CSV imported", Toast.LENGTH_LONG).show();
+//                }
+//
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//            }
 
-        // check if exists or not
-        if (csvFile.exists()) {
-            // backup exists
-            // to import csv we need to add open csv library
-            try {
-                CSVReader csvReader = new CSVReader(new FileReader(csvFile.getAbsolutePath()));
-                String[] nextLine;
-                while ((nextLine = csvReader.readNext()) != null) {
-                    // use same order for import as used for export
-                    String nomenclature = nextLine[3];
-                    String epc = nextLine[0];
-                    String description = nextLine[1];
-                    String type = nextLine[2];
-                    int amount = Integer.parseInt(nextLine[4]);
-                    String amountString = String.valueOf(amount);
-                    TagData tag = new TagData(
-                            "" + nomenclature,
-                            "" + epc,
-                            "" + description,
-                            "" + type,
-                            amount
-                    );
-                    boolean answer = db.insertEPC(tag, tag.getEpc());
-                }
+//        } else {
+//            // backup doesn't exist
+//            Toast.makeText(this, "No backup found...", Toast.LENGTH_LONG).show();
+//        }
 
-            } catch (Exception e) {
-
-            }
-
-        } else {
-            // backup doesn't exist
-            Toast.makeText(this, "No backup found...", Toast.LENGTH_LONG).show();
-        }
+        db.importCSVToDatabase(this, csvFileName);
     }
 
 
@@ -580,14 +590,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_setUser)).setIndicator(getString(R.string.title_setUser)), SetUser.class, null);
         mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_marking)).setIndicator(getString(R.string.title_marking)), UHFReadTagFragment.class, null);
         mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_inventory)).setIndicator(getString(R.string.title_inventory)), UHFInventoryFragment.class, null);
-
+        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.inventory1c)).setIndicator(getString(R.string.inventory1c)), Import1CFragment.class, null);
 //        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_inventory2)).setIndicator(getString(R.string.title_inventory2)), UHFNewReadTagFragment.class, null);
 
         mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.title_2d_Scan)).setIndicator(getString(R.string.title_2d_Scan)), BarcodeFragment.class, null);
 
         mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.uhf_msg_tab_set)).setIndicator(getString(R.string.uhf_msg_tab_set)), UHFSetFragment.class, null);
 
-
+        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.result_table)).setIndicator(getString(R.string.result_table)), ResultFragment.class, null);
 //        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.uhf_msg_tab_read)).setIndicator(getString(R.string.uhf_msg_tab_read)), UHFReadFragment.class, null);
 
 //        mTabHost.addTab(mTabHost.newTabSpec(getString(R.string.uhf_msg_tab_write)).setIndicator(getString(R.string.uhf_msg_tab_write)), UHFWriteFragment.class, null);
@@ -721,13 +731,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             }
             break;
-        }
-    }
-
-    public void updateInventoryFragment() {
-        InventoryFragment1C fragment = (InventoryFragment1C) getSupportFragmentManager().findFragmentById(R.id.fragment1c);
-        if (fragment != null) {
-            fragment.updateData(); // Создайте метод updateData() в InventoryFragment1C для обновления данных в фрагменте
         }
     }
 

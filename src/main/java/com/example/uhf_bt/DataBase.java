@@ -2,10 +2,10 @@ package com.example.uhf_bt;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -15,17 +15,21 @@ import com.example.uhf_bt.Models.Facility;
 import com.example.uhf_bt.Models.Premise;
 import com.example.uhf_bt.Models.TagData;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataBase extends SQLiteOpenHelper {
 
     private static final String db_name = "rfidCounter";
-    private static final int db_version = 45;
+    private static final int db_version = 51;
     private static final String db_table = "marking";
 
     //columns
-    private static final String db_id = "ID";
+    private static final String db_id = "id";
     private static final String db_epc = "epc";
     private static final String db_type = "type";
     private static final String db_description = "description";
@@ -65,6 +69,37 @@ public class DataBase extends SQLiteOpenHelper {
     private final static String db_premise_name = "name";
     private final static String db_premise_note = "note";
 
+    // inventory table from 1c
+    private final static String db_table_inventory_1c = "inventory_table_1c";
+    private final static String db_table_1c_id = "inventory_table_1c_id";
+    private final static String db_table_1c_epc = "inventory_table_1c_epc";
+    private final static String db_table_1c_type = "inventory_table_1c_type";
+    private final static String db_table_1c_description = "inventory_table_1c_description";
+
+    private final static String db_table_1c_inventory_number = "db_table_1c_inventory_number";
+    private final static String db_table_1c_nomenclature = "db_table_1c_nomenclature";
+    private final static String db_table_1c_amount = "db_table_1c_amount";
+    private final static String db_table_1c_facility = "db_table_1c_facility";
+    private final static String db_table_1c_premise = "db_table_1c_premise";
+    private final static String db_table_1c_datetime = "db_table_1c_datetime";
+    private final static String db_table_1c_executor = "db_table_1c_executor";
+
+    // result table
+    private final static String db_table_result = "result_table";
+    private final static String resultTable_id = "id";
+    private final static String resultTable_epc = "epc";
+    private final static String resultTable_type = "type";
+    private final static String resultTable_description = "description";
+
+    private final static String resultTable_inventory_number = "inventory_number";
+    private final static String resultTable_nomenclature = "nomenclature";
+    private final static String resultTable_amount = "amount";
+    private final static String resultTable_facility = "facility";
+    private final static String resultTable_premise = "premise";
+    private final static String resultTable_dateTime = "dateTime";
+    private final static String resultTable_executor = "executor";
+
+
 
     public DataBase(@Nullable Context context) {
         super(context, db_name, null, db_version);
@@ -97,12 +132,25 @@ public class DataBase extends SQLiteOpenHelper {
                     dbUserTable,
                     db_user_id, db_user_role, db_user_name, db_user_note);
 
+            String  queryInventory1c = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT," +
+                            " %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s INTEGER, %s TEXT, %s TEXT, %s TEXT, %s TEXT)",
+                    db_table_inventory_1c, db_table_1c_id, db_table_1c_epc, db_table_1c_type, db_table_1c_description, db_table_1c_inventory_number, db_table_1c_nomenclature, db_table_1c_amount,
+                    db_table_1c_facility, db_table_1c_premise, db_table_1c_datetime, db_table_1c_executor);
+            String  queryResult = String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT," +
+                            " %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s INTEGER, %s TEXT, %s TEXT, %s TEXT, %s TEXT)",
+                    db_table_result, resultTable_id, resultTable_epc, resultTable_type, resultTable_description, resultTable_inventory_number, resultTable_nomenclature, resultTable_amount,
+                    resultTable_facility, resultTable_premise, resultTable_dateTime, resultTable_executor);
+
+
+
+
             db.execSQL(query);
             db.execSQL(queryUser);
             db.execSQL(queryFacility);
             db.execSQL(queryInventory);
             db.execSQL(queryPremise);
-
+            db.execSQL(queryInventory1c);
+            db.execSQL(queryResult);
             Log.d("DataBase", "onCreate called");
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -117,11 +165,15 @@ public class DataBase extends SQLiteOpenHelper {
         String queryInventory = String.format("DROP TABLE IF EXISTS %s", db_table_inventory);
         String queryFacility = String.format("DROP TABLE IF EXISTS %s", db_facilityTable);
         String queryPremise = String.format("DROP TABLE IF EXISTS %s", db_premiseTable);
+        String query1c = String.format("DROP TABLE IF EXISTS %s", db_table_inventory_1c);
+        String queryResult = String.format("DROP TABLE IF EXISTS %s", db_table_result);
         db.execSQL(queryMarking);
         db.execSQL(queryFacility);
         db.execSQL(queryInventory);
         db.execSQL(queryPremise);
         db.execSQL(queryUsers);
+        db.execSQL(query1c);
+        db.execSQL(queryResult);
         onCreate(db);
     }
 
@@ -270,28 +322,6 @@ public class DataBase extends SQLiteOpenHelper {
         return result > 0;
     }
 
-    public List<TagData> get1C() {
-        List<TagData> data = new ArrayList<>();
-        String select = "SELECT * FROM " + db_table;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(select, null);
-        if (cursor.moveToFirst()) {
-            do {
-                TagData tag = new TagData(
-                        "" + cursor.getString(cursor.getColumnIndex(db_nomenclature)),
-                        "" + cursor.getString(cursor.getColumnIndex(db_epc)),
-                        "" + cursor.getString(cursor.getColumnIndex(db_description)),
-                        "" + cursor.getString(cursor.getColumnIndex(db_type)),
-                        1
-                );
-                // add tag to list
-                data.add(tag);
-
-            } while (cursor.moveToNext());
-        }
-        db.close();
-        return data;
-    }
 
 
     public boolean insertUser(Executor executor) {
@@ -423,4 +453,159 @@ public class DataBase extends SQLiteOpenHelper {
     }
 
 
+    public void importCSVToDatabase(Context context, String csvFileName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String csvFilePath = "sdcard/1CImportedFiles/SQLite_Backup.csv";
+
+        try {
+            AssetManager assetManager = context.getAssets();
+            InputStream inputStream = assetManager.open(csvFilePath);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                // Разделение строки CSV и вставление данные в базу данных
+                String[] values = line.split(",");
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(db_table_1c_id, values[0]);
+                contentValues.put(db_table_1c_epc, values[1]);
+                contentValues.put(db_table_1c_type, values[2]);
+                contentValues.put(db_table_1c_description, values[3]);
+                contentValues.put(db_table_1c_inventory_number, values[4]);
+                contentValues.put(db_table_1c_nomenclature, values[5]);
+                contentValues.put(db_table_1c_amount, values[6]);
+                contentValues.put(db_table_1c_facility, values[7]);
+                contentValues.put(db_table_1c_premise, values[8]);
+                contentValues.put(db_table_1c_datetime, values[9]);
+                contentValues.put(db_table_1c_executor, values[10]);
+
+                db.insert(db_table_inventory_1c, null, contentValues);
+            }
+
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<TagData> getDataFrom1C(){
+        List<TagData> tagList1C = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + db_table_inventory_1c;
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()){
+            do{
+                String id = cursor.getString(cursor.getColumnIndex(db_table_1c_id));
+                String epc = cursor.getString(cursor.getColumnIndex(db_table_1c_epc));
+                String type = cursor.getString(cursor.getColumnIndex(db_table_1c_type));
+                String description = cursor.getString(cursor.getColumnIndex(db_table_1c_description));
+                String inventory_number = cursor.getString(cursor.getColumnIndex(db_table_1c_inventory_number));
+                String nomenclature = cursor.getString(cursor.getColumnIndex(db_table_1c_nomenclature));
+                String amount = cursor.getString(cursor.getColumnIndex(db_table_1c_amount));
+                String facility = cursor.getString(cursor.getColumnIndex(db_table_1c_facility));
+                String premise = cursor.getString(cursor.getColumnIndex(db_table_1c_premise));
+                String dateTime = cursor.getString(cursor.getColumnIndex(db_table_1c_datetime));
+                String executor = cursor.getString(cursor.getColumnIndex(db_table_1c_executor));
+
+                TagData tagData = new TagData(
+                        id, epc, type, description, inventory_number, nomenclature, Integer.parseInt(amount),
+                        facility, premise, dateTime, executor
+                );
+
+                tagList1C.add(tagData);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return tagList1C;
+
+    }
+
+    public boolean importDataFrom1C(TagData tagData){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(db_table_1c_id, tagData.getId());
+        values.put(db_table_1c_epc, tagData.getEpc());
+        values.put(db_table_1c_type, tagData.getType());
+        values.put(db_table_1c_description, tagData.getDescription());
+        values.put(db_table_1c_inventory_number, tagData.getInventoryNumber());
+        values.put(db_table_1c_nomenclature, tagData.getNomenclature());
+        values.put(db_table_1c_amount, tagData.getAmount());
+        values.put(db_table_1c_facility, tagData.getAmount());
+        values.put(db_table_1c_premise, tagData.getPremise());
+        values.put(db_table_1c_datetime, tagData.getDateTimeFormatter());
+        values.put(db_table_1c_executor, tagData.getExecutor());
+        long result = db.insert(db_table_inventory_1c, null, values);
+        db.close();
+        if (result == -1)
+            return false;
+        else
+            return true;
+
+    }
+
+    public void refreshResultTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String joinQuery = "INSERT INTO result_table (epc, type, description, inventory_number, nomenclature, Amount, executor, facility, premise, dateTime, executor)" +
+                "SELECT " +
+                "  inventory_table.epc, " +
+                "  inventory_table.type, " +
+                "  inventory_table.description, " +
+                "  inventory_table.inventory_number, " +
+                "  inventory_table.nomenclature, " +
+                "  (inventory_table.Amount - inventory_table_1c.db_table_1c_amount) AS amount, " +
+                "  inventory_table.executor, " +
+                "  inventory_table.facility, " +
+                "  inventory_table.premise, " +
+                "  inventory_table.dateTime, " +
+                "  inventory_table.executor" +
+                " FROM " +
+                "  inventory_table " +
+                " LEFT JOIN " +
+                "  inventory_table_1c " +
+                " ON " +
+                "  inventory_table.epc = inventory_table_1c.inventory_table_1c_epc;";
+
+        db.execSQL(joinQuery);
+    }
+
+    public List<TagData> getResult() {
+        List<TagData> resultData = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+
+        String selectQuery = "SELECT * FROM " + db_table_result;
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                TagData tagData = new TagData();
+                // Затем вы можете продолжить извлекать данные и добавлять их в список
+                tagData.setId(cursor.getString(cursor.getColumnIndex(resultTable_id)));
+                tagData.setEpc(cursor.getString(cursor.getColumnIndex(resultTable_epc)));
+                tagData.setType(cursor.getString(cursor.getColumnIndex(resultTable_type)));
+                tagData.setDescription(cursor.getString(cursor.getColumnIndex(resultTable_description)));
+                tagData.setInventoryNumber(cursor.getString(cursor.getColumnIndex(resultTable_inventory_number)));
+                tagData.setNomenclature(cursor.getString(cursor.getColumnIndex(resultTable_nomenclature)));
+                tagData.setAmount(cursor.getInt(cursor.getColumnIndex(resultTable_amount)));
+                tagData.setFacility(cursor.getString(cursor.getColumnIndex(resultTable_facility)));
+                tagData.setPremise(cursor.getString(cursor.getColumnIndex(resultTable_premise)));
+                tagData.setDateTimeFormatter(cursor.getString(cursor.getColumnIndex(resultTable_dateTime)));
+                tagData.setExecutor(cursor.getString(cursor.getColumnIndex(resultTable_executor)));
+
+                resultData.add(tagData);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return resultData;
+    }
+
 }
+
