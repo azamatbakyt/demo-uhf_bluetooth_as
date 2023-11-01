@@ -1,0 +1,128 @@
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Import1CFragment">
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:stretchColumns="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11">
+
+        <TableRow>
+            <TextView
+                android:layout_column="1"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:text="ID"
+                android:layout_marginRight="50dp"
+                android:layout_marginLeft="15dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_column="2"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:text="EPC"
+                android:layout_marginRight="50dp"
+                android:layout_marginLeft="20dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_column="3"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:layout_marginRight="70dp"
+                android:layout_marginLeft="50dp"
+                android:text="TYPE"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_column="4"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:text="DESCRIPTION"
+                android:layout_marginRight="50dp"
+                android:layout_marginLeft="0dp"
+                android:textSize="16sp" />
+
+
+            <TextView
+                android:layout_column="5"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:text="InvNumber"
+                android:layout_marginRight="50dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_column="6"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:text="Nomencl."
+                android:layout_marginRight="50dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_column="7"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:text="AMOUNT"
+                android:layout_marginRight="30dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_column="8"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:text="FACILITY"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="50dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_column="9"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:text="PREMISE"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="50dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_column="10"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:text="DateTime"
+                android:layout_marginRight="50dp"
+                android:layout_marginLeft="16dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_column="11"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center"
+                android:paddingTop="2dp"
+                android:layout_marginLeft="10dp"
+                android:text="Executor"
+                android:textSize="16sp" />
+        </TableRow>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView1C"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </TableLayout>
+</HorizontalScrollView>

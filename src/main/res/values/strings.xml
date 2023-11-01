@@ -1076,7 +1076,7 @@
     <string name="insert_inventory_number" tools:ignore="MissingTranslation">INSERT INVENTORY NUMBER</string>
     <string name="insert_nomenclature" tools:ignore="MissingTranslation">INSERT NOMENCLATURE</string>
     <string name="backup" tools:ignore="MissingTranslation">Backup</string>
-    <string name="restore" tools:ignore="MissingTranslation">Restore</string>
+    <string name="restore" tools:ignore="MissingTranslation">Import table from 1C</string>
     <string name="title_inventory">Инвентаризация</string>
     <string name="btSetUser">Set User</string>
     <string name="userName">User</string>
@@ -1095,6 +1095,7 @@
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
+    <string name="Refresh_resultTable">Refresh Result Table</string>
     <string name="previous">Previous</string>
 
     <string name="lorem_ipsum">
@@ -1145,4 +1146,7 @@
     <string name="setPremise">Set Premise</string>
     <string name="setFacility">Set Facility</string>
     <string name="insert_amount">INSERT AMOUNT</string>
+    <string name="inventory1c">Инвентаризация 1С</string>
+    <string name="result_table">Result</string>
+    <string name="refreshData">REFRESH</string>
 </resources>

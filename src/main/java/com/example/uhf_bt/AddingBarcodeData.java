@@ -85,6 +85,7 @@ public class AddingBarcodeData extends AppCompatActivity {
                     } else {
                         message = "Не удалось добавить данные в базу данных";
                     }
+                    finish();
                     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                 }
             });

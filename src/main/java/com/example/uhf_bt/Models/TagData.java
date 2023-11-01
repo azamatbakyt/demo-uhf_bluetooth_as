@@ -1,7 +1,5 @@
 package com.example.uhf_bt.Models;
 
-import java.time.format.DateTimeFormatter;
-
 public class TagData {
     private String epc;
     private int amount;
@@ -10,15 +8,13 @@ public class TagData {
     private String inventoryNumber;
     private String nomenclature;
     private String dateTimeFormatter;
-
-    private int facility_id;
-    private int premise_id;
     private String facility;
     private String premise;
     private String executor;
     private String type;
 
-    public TagData(){}
+    public TagData() {
+    }
 
     public TagData(String id, final String epc, String type, final String description, final String inventoryNumber
             , final String nomenclature, int amount) {
@@ -31,13 +27,13 @@ public class TagData {
         this.amount = amount;
     }
 
-    public TagData(String description, String inventoryNumber, String nomenclature){
+    public TagData(String description, String inventoryNumber, String nomenclature) {
         this.description = description;
         this.inventoryNumber = inventoryNumber;
         this.nomenclature = nomenclature;
     }
 
-    public TagData(String nomenclature, String epc, String description, String type, int amount){
+    public TagData(String nomenclature, String epc, String description, String type, int amount) {
         this.nomenclature = nomenclature;
         this.epc = epc;
         this.description = description;
@@ -48,7 +44,7 @@ public class TagData {
 
     public TagData(String id, String epc, String type, String description, String inventoryNumber,
                    String nomenclature, int amount, String facility, String premise,
-                   String dateTimeFormatter, String executor){
+                   String dateTimeFormatter, String executor) {
         this.id = id;
         this.epc = epc;
         this.type = type;
@@ -61,8 +57,6 @@ public class TagData {
         this.dateTimeFormatter = dateTimeFormatter;
         this.executor = executor;
     }
-
-
 
 
     public String getEpc() {
@@ -149,25 +143,11 @@ public class TagData {
         return dateTimeFormatter;
     }
 
+
     public void setDateTimeFormatter(String dateTimeFormatter) {
         this.dateTimeFormatter = dateTimeFormatter;
     }
 
-    public int getFacility_id() {
-        return facility_id;
-    }
-
-    public void setFacility_id(int facility_id) {
-        this.facility_id = facility_id;
-    }
-
-    public int getPremise_id() {
-        return premise_id;
-    }
-
-    public void setPremise_id(int premise_id) {
-        this.premise_id = premise_id;
-    }
 
     @Override
     public String toString() {

@@ -17,20 +17,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.example.uhf_bt.AdapterRecord;
 import com.example.uhf_bt.DataBase;
 import com.example.uhf_bt.MainActivity;
 import com.example.uhf_bt.Models.TagData;
 import com.example.uhf_bt.R;
 import com.example.uhf_bt.Utils;
-import com.rscja.deviceapi.RFIDWithUHFBLE;
 import com.rscja.deviceapi.interfaces.ConnectionStatus;
 import com.rscja.deviceapi.interfaces.KeyEventCallback;
 
-import android.os.AsyncTask;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BarcodeFragment extends Fragment implements View.OnClickListener {
     private AdapterRecord adapterRecord;
