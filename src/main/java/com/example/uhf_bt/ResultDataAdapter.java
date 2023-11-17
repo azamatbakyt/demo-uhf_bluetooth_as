@@ -42,7 +42,7 @@ public class ResultDataAdapter extends RecyclerView.Adapter<ResultDataAdapter.Vi
             holder.amountResult.setText(String.valueOf(tag.getAmount()));
             holder.facilityResult.setText(tag.getFacility());
             holder.premiseResult.setText(tag.getPremise());
-            holder.dateTime.setText(tag.getDateTimeFormatter());
+            holder.dateTime.setText(String.valueOf(tag.getDateTimeFormatter()));
             holder.executorResult.setText(tag.getExecutor());
         } else{
             return;

@@ -25,8 +25,9 @@
             <Spinner
                 android:id="@+id/spnFacility"
                 android:layout_width="fill_parent"
-                android:layout_height="48dp"
-                android:gravity="center_horizontal" />
+                android:layout_height="50dp"
+                android:gravity="center_horizontal"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -37,9 +38,25 @@
             <Button
                 android:id="@+id/btnSetFacility"
                 android:layout_width="0dip"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/setFacility" />
+                android:paddingBottom="5dp"
+                android:text="@string/newFacility" />
+
+            <Button
+                android:id="@+id/editFacility"
+                android:layout_width="0dip"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="@string/editFacility" />
+
+            <Button
+                android:id="@+id/deleteFacility"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+
+                android:layout_weight="1"
+                android:text="@string/deleteFacility" />
 
         </LinearLayout>
 
@@ -73,10 +90,22 @@
             <Button
                 android:id="@+id/btnSetPremise"
                 android:layout_width="0dip"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/setPremise"/>
+                android:text="@string/setNewPremise"/>
+            <Button
+                android:id="@+id/editPremise"
+                android:layout_width="0dip"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="@string/editPremise" />
 
+            <Button
+                android:id="@+id/deletePremise"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/deletePremise" />
         </LinearLayout>
 
         <LinearLayout
@@ -110,12 +139,24 @@
             android:padding="5dp">
 
             <Button
-                android:id="@+id/btnSetSettings"
+                android:id="@+id/btnSetNewUser"
                 android:layout_width="0dip"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/btSetSettings" />
+                android:text="@string/btSetNewUser" />
+            <Button
+                android:id="@+id/editUser"
+                android:layout_width="0dip"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="@string/editUser" />
 
+            <Button
+                android:id="@+id/deleteUser"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/deleteUser" />
 
         </LinearLayout>
 

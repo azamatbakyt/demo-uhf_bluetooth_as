@@ -1149,4 +1149,14 @@
     <string name="inventory1c">Инвентаризация 1С</string>
     <string name="result_table">Result</string>
     <string name="refreshData">REFRESH</string>
+    <string name="newFacility">Add new facility</string>
+    <string name="editFacility">Edit facility</string>
+    <string name="deleteFacility">Delete facility</string>
+    <string name="editPremise">Edit premise</string>
+    <string name="deletePremise">Delete premise</string>
+    <string name="setNewPremise">Add new premise</string>
+    <string name="btSetNewUser">Set new user</string>
+    <string name="editUser">Edit User</string>
+    <string name="deleteUser">Delete user</string>
+    <string name="title_activity_edit_premise">EditPremise</string>
 </resources>

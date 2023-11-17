@@ -136,7 +136,7 @@ public class BarcodeFragment extends Fragment implements View.OnClickListener {
         @Override
         public void run() {
             String data = null;
-            String example = "4820024700016";
+            String example = "12345678";
             byte[] temp = example.getBytes();
             if (temp != null) {
                 if (spingCodingFormat.getSelectedItemPosition() == 1) {
@@ -187,6 +187,7 @@ public class BarcodeFragment extends Fragment implements View.OnClickListener {
                 tagDataList.add(tagData);
                 adapterRecord.updateData(tagDataList);
                 barcodeRv.setAdapter(adapterRecord);
+
             } else {
                 TagData tagData = new TagData();
                 tagData.setNomenclature("Null");
@@ -197,8 +198,24 @@ public class BarcodeFragment extends Fragment implements View.OnClickListener {
                 tagDataList.add(tagData);
                 adapterRecord.updateData(tagDataList);
                 barcodeRv.setAdapter(adapterRecord);
+
             }
         }
     }
-    
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateRecyclerView();
+    }
+
+    private void updateRecyclerView() {
+        if (adapterRecord != null) {
+            List<TagData> newData = db.getAll();
+
+            adapterRecord.updateData(newData);
+
+            adapterRecord.notifyDataSetChanged();
+        }
+    }
 }

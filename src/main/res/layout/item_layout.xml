@@ -1,111 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:stretchColumns="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11">
+    android:orientation="horizontal">
 
-    <TableRow>
         <TextView
             android:id="@+id/id1C"
-            android:layout_column="1"
-            android:fontFamily="@font/montserrat_bold"
-            android:layout_width="50dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="Id"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/epc1C"
-            android:layout_column="2"
-            android:layout_width="150dp"
-            android:fontFamily="@font/montserrat_bold"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="EPC"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/type1C"
-            android:layout_column="3"
-            android:layout_width="120dp"
-            android:fontFamily="@font/montserrat_bold"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="Type"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/description1C"
-            android:layout_column="4"
-            android:layout_width="150dp"
-            android:fontFamily="@font/montserrat_bold"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="Description"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
-            android:id="@+id/inventoryNumber1C"
-            android:layout_column="5"
-            android:fontFamily="@font/montserrat_bold"
-            android:gravity="center"
-            android:layout_width="150dp"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:id="@+id/invNumber1C"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="inv number"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/nomenclature1C"
-            android:layout_column="6"
-            android:fontFamily="@font/montserrat_bold"
-            android:layout_width="150dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="Nomenclature"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/amount1C"
-            android:layout_column="7"
-            android:fontFamily="@font/montserrat_bold"
-            android:layout_width="80dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="Amount"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/facility1C"
-            android:layout_column="8"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:fontFamily="@font/montserrat_bold"
-            android:layout_width="150dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="Facility"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/premise1C"
-            android:layout_column="9"
-            android:fontFamily="@font/montserrat_bold"
-            android:layout_width="150dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="Premise"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
-            android:id="@+id/dateTime"
-            android:layout_column="10"
-            android:fontFamily="@font/montserrat_bold"
-            android:layout_width="120dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
+            android:id="@+id/dateTime1C"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="DateTime"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
         <TextView
-            android:id="@+id/executor1C"
-            android:layout_column="11"
-            android:fontFamily="@font/montserrat_bold"
-            android:layout_width="170dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:textSize="16sp" />
-    </TableRow>
+            android:id="@+id/executor1c"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:text="Executor"
+            android:textSize="19sp"
+            android:textColor="@color/white" />
 
-</TableLayout>
+
+</LinearLayout>

@@ -1,128 +1,149 @@
-<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#252A36"
+    android:weightSum="1"
     tools:context=".Import1CFragment">
 
-    <TableLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:stretchColumns="1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11">
 
-        <TableRow>
-            <TextView
-                android:layout_column="1"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="10dp"
-                android:text="ID"
-                android:layout_marginRight="50dp"
-                android:layout_marginLeft="15dp"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_column="2"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:text="EPC"
-                android:layout_marginRight="50dp"
-                android:layout_marginLeft="20dp"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_column="3"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:layout_marginRight="70dp"
-                android:layout_marginLeft="50dp"
-                android:text="TYPE"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_column="4"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:text="DESCRIPTION"
-                android:layout_marginRight="50dp"
-                android:layout_marginLeft="0dp"
-                android:textSize="16sp" />
-
-
-            <TextView
-                android:layout_column="5"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:text="InvNumber"
-                android:layout_marginRight="50dp"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_column="6"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:text="Nomencl."
-                android:layout_marginRight="50dp"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_column="7"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="10dp"
-                android:text="AMOUNT"
-                android:layout_marginRight="30dp"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_column="8"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:text="FACILITY"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="50dp"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_column="9"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:text="PREMISE"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="50dp"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_column="10"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:text="DateTime"
-                android:layout_marginRight="50dp"
-                android:layout_marginLeft="16dp"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_column="11"
-                android:fontFamily="@font/montserrat_bold"
-                android:gravity="center"
-                android:paddingTop="2dp"
-                android:layout_marginLeft="10dp"
-                android:text="Executor"
-                android:textSize="16sp" />
-        </TableRow>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView1C"
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#252A36"
+        >
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:background="#252A36"
+            android:orientation="vertical">
 
-    </TableLayout>
-</HorizontalScrollView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#888888"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="Id"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/epcFrom1C"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="EPC"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/type1CFrom"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="Type"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/DescriptionFrom1C"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="Description"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/invNumberFrom1C"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="Inv Number"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/nomenclatureFrom1c"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="Nomenclature"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/amountFrom1C"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="Amount"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/facilityFrom1C"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="Facility"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/premiseFrom1C"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="Premise"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dateTimeFrom1C"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="DateTime"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/ExecutorFrom1C"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:text="Executor"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+            <ListView
+                android:id="@+id/importedItems"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#252A36"
+                android:scrollbars="horizontal|vertical" />
+        </LinearLayout>
+    </HorizontalScrollView>
+</LinearLayout>

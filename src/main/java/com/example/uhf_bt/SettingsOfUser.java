@@ -9,7 +9,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.uhf_bt.Models.Executor;
-import com.example.uhf_bt.Models.TagData;
 
 public class SettingsOfUser extends AppCompatActivity {
 

@@ -1,7 +1,5 @@
 package com.example.uhf_bt;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -11,13 +9,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.uhf_bt.Models.Facility;
 import com.example.uhf_bt.Models.Premise;
-import com.example.uhf_bt.Models.TagData;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class InsertPremise extends AppCompatActivity {
 
@@ -71,12 +68,17 @@ public class InsertPremise extends AppCompatActivity {
                 });
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                Toast.makeText(InsertPremise.this, "You have to choose", Toast.LENGTH_LONG).show();
-            }
-        });
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    Toast.makeText(InsertPremise.this, "Choose at least one facility", Toast.LENGTH_SHORT).show();
+                }
+            });
 
-
+        }
     }
-}
+
+
+
+
+
+

@@ -3,6 +3,8 @@ package com.example.uhf_bt;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +22,7 @@ public class AdapterRecord extends RecyclerView.Adapter<AdapterRecord.HolderReco
 
     private Context context;
     private List<TagData> tagRecordList;
-
+    private DataBase dataBase;
     public AdapterRecord(Context context, List<TagData> tagRecordList) {
         this.context = context;
         this.tagRecordList = tagRecordList;
@@ -30,24 +32,45 @@ public class AdapterRecord extends RecyclerView.Adapter<AdapterRecord.HolderReco
     @Override
     public HolderRecord onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.row_epc, parent, false);
+        dataBase = new DataBase(view.getContext());
         return new HolderRecord(view);
     }
 
     public void updateData(List<TagData> newTagRecordList) {
         if (newTagRecordList != null) {
-            this.tagRecordList = newTagRecordList;
-            notifyDataSetChanged();
+            int oldSize = tagRecordList.size();
+            tagRecordList.clear();
+            tagRecordList.addAll(newTagRecordList);
+            int newSize = tagRecordList.size();
+
+            if (oldSize == newSize) {
+                notifyDataSetChanged();
+            } else if (oldSize > newSize) {
+                notifyItemRangeRemoved(newSize, oldSize - newSize);
+            } else {
+                notifyItemRangeInserted(oldSize, newSize - oldSize);
+            }
         }
     }
 
     public void addData(TagData newData) {
         tagRecordList.add(newData);
-        notifyItemInserted(tagRecordList.size() - 1);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                notifyItemInserted(tagRecordList.size() - 1);
+            }
+        });
     }
 
     public void clearData() {
-        tagRecordList.clear();
-        notifyDataSetChanged();
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                tagRecordList.clear();
+                notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -59,13 +82,18 @@ public class AdapterRecord extends RecyclerView.Adapter<AdapterRecord.HolderReco
         String description = tagData.getDescription();
         String type = tagData.getType();
         int amount = tagData.getAmount();
+        if (amount == 0) {
+            tagData.setAmount(1);
+        }
+        amount = tagData.getAmount();
 
         holder.nomenclatureInfo.setText(nomenclature);
         holder.epcInfo.setText(epc);
         holder.descriptionInfo.setText(description);
         holder.typeInfo.setText("Type: " + type);
-        holder.amount.setText("Amount: " + amount);
-         //handle item clicks (go to detail record activity)
+        holder.amount.setText("Amount : " + amount);
+
+        //handle item clicks (go to detail record activity)
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,7 +119,6 @@ public class AdapterRecord extends RecyclerView.Adapter<AdapterRecord.HolderReco
     class HolderRecord extends RecyclerView.ViewHolder {
         ImageView epcImage, moreBtn;
         TextView nomenclatureInfo, epcInfo, descriptionInfo, typeInfo, amount;
-
         public HolderRecord(@NonNull View itemView) {
             super(itemView);
             // init views
@@ -102,6 +129,8 @@ public class AdapterRecord extends RecyclerView.Adapter<AdapterRecord.HolderReco
             amount = itemView.findViewById(R.id.amount);
             moreBtn = itemView.findViewById(R.id.moreBtn);
         }
+
+
     }
 }
 

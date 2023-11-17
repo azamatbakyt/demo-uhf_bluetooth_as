@@ -1,5 +1,7 @@
 package com.example.uhf_bt.Models;
 
+import java.time.LocalDateTime;
+
 public class TagData {
     private String epc;
     private int amount;
@@ -7,7 +9,8 @@ public class TagData {
     private String description;
     private String inventoryNumber;
     private String nomenclature;
-    private String dateTimeFormatter;
+    private LocalDateTime dateTimeFormatter;
+    private String date;
     private String facility;
     private String premise;
     private String executor;
@@ -15,6 +18,7 @@ public class TagData {
 
     public TagData() {
     }
+
 
     public TagData(String id, final String epc, String type, final String description, final String inventoryNumber
             , final String nomenclature, int amount) {
@@ -42,9 +46,11 @@ public class TagData {
     }
 
 
+
+
     public TagData(String id, String epc, String type, String description, String inventoryNumber,
                    String nomenclature, int amount, String facility, String premise,
-                   String dateTimeFormatter, String executor) {
+                   LocalDateTime dateTimeFormatter, String executor) {
         this.id = id;
         this.epc = epc;
         this.type = type;
@@ -55,6 +61,22 @@ public class TagData {
         this.facility = facility;
         this.premise = premise;
         this.dateTimeFormatter = dateTimeFormatter;
+        this.executor = executor;
+    }
+
+    public TagData(String id, String epc, String type, String description, String inventoryNumber,
+                   String nomenclature, int amount, String facility, String premise,
+                   String date, String executor) {
+        this.id = id;
+        this.epc = epc;
+        this.type = type;
+        this.description = description;
+        this.inventoryNumber = inventoryNumber;
+        this.nomenclature = nomenclature;
+        this.amount = amount;
+        this.facility = facility;
+        this.premise = premise;
+        this.date = date;
         this.executor = executor;
     }
 
@@ -139,15 +161,22 @@ public class TagData {
         this.executor = executor;
     }
 
-    public String getDateTimeFormatter() {
-        return dateTimeFormatter;
+    public LocalDateTime getDateTimeFormatter() {
+        return LocalDateTime.now();
     }
 
 
-    public void setDateTimeFormatter(String dateTimeFormatter) {
+    public void setDateTimeFormatter(LocalDateTime dateTimeFormatter) {
         this.dateTimeFormatter = dateTimeFormatter;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     @Override
     public String toString() {

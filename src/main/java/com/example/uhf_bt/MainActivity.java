@@ -5,9 +5,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
+import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -44,12 +48,16 @@ import com.rscja.deviceapi.RFIDWithUHFBLE;
 import com.rscja.deviceapi.interfaces.ConnectionStatus;
 import com.rscja.deviceapi.interfaces.ConnectionStatusCallback;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -123,6 +131,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         } else {
             setTitle(String.format("%s(v%s)", getString(R.string.app_name), BuildConfig.VERSION_NAME));
         }
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE}, PackageManager.PERMISSION_GRANTED);
 
         initUI();
         checkLocationEnable();
@@ -206,7 +216,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return super.onCreateOptionsMenu(menu);
     }
 
-
+    public static final int requestcode = 3;
+    ArrayList<HashMap<String, String>> myList;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
@@ -270,9 +281,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             } else if (item.getItemId() == R.id.restore_action) {
                 // restore all records from csv file
                 if (checkStoragePermission()) {
-
-                    importCSV();
-                    onResume();
+                    Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    fileIntent.setType("text/csv");
+                    fileIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                    try{
+                        startActivityForResult(fileIntent, requestcode);
+                    } catch (ActivityNotFoundException e){
+                        Toast.makeText(this, "No activity", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     // permission denied
                     requestStoragePermissionImport();
@@ -284,10 +300,176 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return true;
     }
 
+
+    private boolean checkStoragePermission() {
+        //check if storage permission is enabled or not and return true/false;
+        boolean result = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        return result;
+    }
+
+    private void requestStoragePermissionImport() {
+        //request storage  permission for import
+        ActivityCompat.requestPermissions(this, storagePermissions, STORAGE_REQUEST_CODE_IMPORT);
+    }
+
+    private void requestStoragePermissionExport() {
+        ActivityCompat.requestPermissions(this, storagePermissions, STORAGE_REQUEST_CODE_EXPORT);
+    }
+
+    private final static String csvFileName = "SQLite_Backup.csv";
+
+    private void exportCSV() {
+        //path of CSV file
+        File folder = new File(Environment.getExternalStorageDirectory() + "/" + "SQLiteBackup"); // SQLiteBackup is a folder name
+        boolean isFolderCreated = false;
+        if (!folder.exists()) {
+            isFolderCreated = folder.mkdir();// create folder if not exists
+        }
+        Log.d("CSC_TAG", "exportCSV: " + isFolderCreated);
+
+        //file name
+
+        //complete path and name
+        String filePathAndName = folder.toString() + "/" + csvFileName;
+
+        //get records
+        List<TagData> tagList = new ArrayList<>();
+        tagList.clear();
+        tagList = db.getAll();
+
+        try {
+            // write csv file
+            FileWriter fw = new FileWriter(filePathAndName);
+
+            fw.append("ID, EPC, Type, Description, InventoryNumber, Nomenclature, Amount, Facility, Premise, DateTime, Executor\n");
+
+            for (int i = 0; i < tagList.size(); i++) {
+                fw.append("" + tagList.get(i).getId());// id
+                fw.append(",");
+                fw.append("" + tagList.get(i).getEpc()); // epc
+                fw.append(",");
+                fw.append("" + tagList.get(i).getType()); // type
+                fw.append(",");
+                fw.append("" + tagList.get(i).getDescription()); // description
+                fw.append(",");
+                fw.append("" + tagList.get(i).getInventoryNumber()); // inventory number
+                fw.append(",");
+                fw.append("" + tagList.get(i).getNomenclature()); // nomenclature
+                fw.append(",");
+                fw.append("" + tagList.get(i).getAmount()); // amount
+                fw.append(",");
+                fw.append("" + tagList.get(i).getFacility()); // facility
+                fw.append(",");
+                fw.append("" + tagList.get(i).getPremise()); // premise
+                fw.append(",");
+                fw.append("" + tagList.get(i).getDateTimeFormatter()); // date
+                fw.append(",");
+                fw.append("" + tagList.get(i).getExecutor()); // executor
+                fw.append("\n");
+
+            }
+            fw.flush();
+            fw.close();
+
+            Toast.makeText(this, "Backup Exported to: " + filePathAndName, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void importCSV() {
+//        String filePathAndName = Environment.getExternalStorageDirectory() + "/SQLiteBackup/" + csvFileName;
+//        File csvFile = new File(filePathAndName);
+//
+//        // check if exists or not
+//        if (csvFile.exists()) {
+//
+//            try {
+//                CSVReader reader = new CSVReader(new FileReader(csvFile.getAbsolutePath()));
+//                String[] nextLine;
+//                while ((nextLine = reader.readNext()) != null) {
+//                    String id = nextLine[0];
+//                    String epc = nextLine[1];
+//                    String type = nextLine[2];
+//                    String description = nextLine[3];
+//                    String inventory_number = nextLine[4];
+//                    String nomenclature = nextLine[5];
+//                    String amount = nextLine[6];
+//                    String facility = nextLine[7];
+//                    String premise = nextLine[8];
+//                    String dateTime = nextLine[9];
+//                    String executor = nextLine[10];
+//                    TagData tagData = new TagData(
+//                            "" + id,
+//                            "" + epc,
+//                            "" + type,
+//                            "" + description,
+//                            "" + inventory_number,
+//                            "" + nomenclature,
+//                            Integer.parseInt(amount),
+//                            "" + facility,
+//                            "" + premise,
+//                            "" + dateTime,
+//                            "" + executor
+//                    );
+//                    if (db.importDataFrom1C(tagData))
+//                        Toast.makeText(this, "CSV imported", Toast.LENGTH_LONG).show();
+//                }
+//
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//            }
+
+//        } else {
+//            // backup doesn't exist
+//            Toast.makeText(this, "No backup found...", Toast.LENGTH_LONG).show();
+//        }
+
+        db.importCSVToDatabase(this, csvFileName);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        // handle permission result
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case STORAGE_REQUEST_CODE_EXPORT: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission granted
+                    exportCSV();
+                } else {
+                    // permission denied
+                    Toast.makeText(this, STORAGE_PERMISSION_REQUIRED, Toast.LENGTH_LONG).show();
+                }
+
+            }
+            break;
+            case STORAGE_REQUEST_CODE_IMPORT: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission granted
+                    importCSV();
+                } else {
+                    // permission denied
+                    Toast.makeText(this, STORAGE_PERMISSION_REQUIRED, Toast.LENGTH_LONG).show();
+                }
+
+            }
+            break;
+
+        }
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (data == null)
+            return;
+
         switch (requestCode) {
+
+
             case REQUEST_SELECT_DEVICE:
                 //When the DeviceListActivity return, with the selected device address
                 if (resultCode == Activity.RESULT_OK && data != null) {
@@ -307,6 +489,79 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     showToast("Problem in BT Turning ON ");
                 }
                 break;
+            case requestcode:
+                String filePath = data.getData().getPath();
+                Log.e("New file path", filePath);
+                if (filePath.contains("/root_path"))
+                    filePath = filePath.replace("/root_path", "");
+                Log.e("New File path", filePath);
+                db = new DataBase(getApplicationContext());
+                SQLiteDatabase database = db.getWritableDatabase();
+                database.execSQL("DELETE FROM inventory_table_1c");
+                try{
+                    if (resultCode == RESULT_OK){
+                    Log.e("RESULT CODE", "OK");
+                    try{
+                        FileReader file = new FileReader(filePath);
+                        BufferedReader bfReader = new BufferedReader(file);
+                        ContentValues contentValues = new ContentValues();
+                        String line = "";
+                        database.beginTransaction();
+                        while((line = bfReader.readLine()) != null) {
+                            Log.e("line", line);
+                            String[] str = line.split(",", 11); // defining 11 columns with null or blank field
+                            int id = Integer.parseInt(str[0]);
+                            String epc = str[1];
+                            String type = str[2];
+                            String description = str[3];
+                            String invNumber = str[4];
+                            String nomenclature = str[5];
+                            int amount = Integer.parseInt(str[6]);
+                            String facility = str[7];
+                            String premise = str[8];
+                            String dateTime = str[9];
+                            String executor = str[10];
+
+                            contentValues.put(DataBase.db_table_1c_id, id);
+                            contentValues.put(DataBase.db_table_1c_epc, epc);
+                            contentValues.put(DataBase.db_table_1c_type, type);
+                            contentValues.put(DataBase.db_table_1c_description, description);
+                            contentValues.put(DataBase.db_table_1c_inventory_number, invNumber);
+                            contentValues.put(DataBase.db_table_1c_nomenclature, nomenclature);
+                            contentValues.put(DataBase.db_table_1c_amount, amount);
+                            contentValues.put(DataBase.db_table_1c_facility, facility);
+                            contentValues.put(DataBase.db_table_1c_premise, premise);
+                            contentValues.put(DataBase.db_table_1c_datetime, dateTime);
+                            contentValues.put(DataBase.db_table_1c_executor, executor);
+                            database.insert(DataBase.db_table_inventory_1c, null, contentValues);
+
+                            Toast.makeText(this, "Successfully imported", Toast.LENGTH_SHORT).show();
+
+                            Log.e("Import: ", "Successfully imported");
+                        }
+
+                        database.setTransactionSuccessful();
+                        database.endTransaction();
+                        } catch (Exception e){
+                        System.out.println(e.getMessage());
+                    }
+                    } else{
+                        Log.e("RESULT CODE", "InValid");
+                        if (database.inTransaction())
+
+                            database.endTransaction();
+                        Toast.makeText(MainActivity.this, "Only CSV files allowed.", Toast.LENGTH_LONG).show();
+
+                    }
+                } catch (Exception e){
+                    Log.e("Error", e.getMessage().toString());
+                    if (database.inTransaction())
+
+                        database.endTransaction();
+
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            break;
             default:
                 break;
         }
@@ -440,134 +695,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         FileUtils.saveXmlList(list);
     }
 
-    private boolean checkStoragePermission() {
-        //check if storage permission is enabled or not and return true/false;
-        boolean result = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return result;
-    }
 
-    private void requestStoragePermissionImport() {
-        //request storage  permission for import
-        ActivityCompat.requestPermissions(this, storagePermissions, STORAGE_REQUEST_CODE_IMPORT);
-    }
-
-    private void requestStoragePermissionExport() {
-        ActivityCompat.requestPermissions(this, storagePermissions, STORAGE_REQUEST_CODE_EXPORT);
-    }
-
-    private final static String csvFileName = "SQLite_Backup.csv";
-
-    private void exportCSV() {
-        //path of CSV file
-        File folder = new File(Environment.getExternalStorageDirectory() + "/" + "SQLiteBackup"); // SQLiteBackup is a folder name
-        boolean isFolderCreated = false;
-        if (!folder.exists()) {
-            isFolderCreated = folder.mkdir();// create folder if not exists
-        }
-        Log.d("CSC_TAG", "exportCSV: " + isFolderCreated);
-
-        //file name
-
-        //complete path and name
-        String filePathAndName = folder.toString() + "/" + csvFileName;
-
-        //get records
-        List<TagData> tagList = new ArrayList<>();
-        tagList.clear();
-        tagList = db.getAll();
-
-        try {
-            // write csv file
-            FileWriter fw = new FileWriter(filePathAndName);
-
-            fw.append("ID, EPC, Type, Description, InventoryNumber, Nomenclature, Amount, Facility, Premise, DateTime, Executor\n");
-
-            for (int i = 0; i < tagList.size(); i++) {
-                fw.append("" + tagList.get(i).getId());// id
-                fw.append(",");
-                fw.append("" + tagList.get(i).getEpc()); // epc
-                fw.append(",");
-                fw.append("" + tagList.get(i).getType()); // type
-                fw.append(",");
-                fw.append("" + tagList.get(i).getDescription()); // description
-                fw.append(",");
-                fw.append("" + tagList.get(i).getInventoryNumber()); // inventory number
-                fw.append(",");
-                fw.append("" + tagList.get(i).getNomenclature()); // nomenclature
-                fw.append(",");
-                fw.append("" + tagList.get(i).getAmount()); // amount
-                fw.append(",");
-                fw.append("" + tagList.get(i).getFacility()); // facility
-                fw.append(",");
-                fw.append("" + tagList.get(i).getPremise()); // premise
-                fw.append(",");
-                fw.append("" + tagList.get(i).getDateTimeFormatter()); // date
-                fw.append(",");
-                fw.append("" + tagList.get(i).getExecutor()); // executor
-                fw.append("\n");
-
-            }
-            fw.flush();
-            fw.close();
-
-            Toast.makeText(this, "Backup Exported to: " + filePathAndName, Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-    }
-
-    private void importCSV() {
-//        String filePathAndName = Environment.getExternalStorageDirectory() + "/SQLiteBackup/" + csvFileName;
-//        File csvFile = new File(filePathAndName);
-//
-//        // check if exists or not
-//        if (csvFile.exists()) {
-//
-//            try {
-//                CSVReader reader = new CSVReader(new FileReader(csvFile.getAbsolutePath()));
-//                String[] nextLine;
-//                while ((nextLine = reader.readNext()) != null) {
-//                    String id = nextLine[0];
-//                    String epc = nextLine[1];
-//                    String type = nextLine[2];
-//                    String description = nextLine[3];
-//                    String inventory_number = nextLine[4];
-//                    String nomenclature = nextLine[5];
-//                    String amount = nextLine[6];
-//                    String facility = nextLine[7];
-//                    String premise = nextLine[8];
-//                    String dateTime = nextLine[9];
-//                    String executor = nextLine[10];
-//                    TagData tagData = new TagData(
-//                            "" + id,
-//                            "" + epc,
-//                            "" + type,
-//                            "" + description,
-//                            "" + inventory_number,
-//                            "" + nomenclature,
-//                            Integer.parseInt(amount),
-//                            "" + facility,
-//                            "" + premise,
-//                            "" + dateTime,
-//                            "" + executor
-//                    );
-//                    if (db.importDataFrom1C(tagData))
-//                        Toast.makeText(this, "CSV imported", Toast.LENGTH_LONG).show();
-//                }
-//
-//            } catch (Exception e) {
-//                System.out.println(e.getMessage());
-//            }
-
-//        } else {
-//            // backup doesn't exist
-//            Toast.makeText(this, "No backup found...", Toast.LENGTH_LONG).show();
-//        }
-
-        db.importCSVToDatabase(this, csvFileName);
-    }
 
 
     protected void initUI() {
@@ -703,36 +831,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
-        // handle permission result
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case STORAGE_REQUEST_CODE_EXPORT: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission granted
-                    exportCSV();
-                } else {
-                    // permission denied
-                    Toast.makeText(this, STORAGE_PERMISSION_REQUIRED, Toast.LENGTH_LONG).show();
-                }
-
-            }
-            break;
-            case STORAGE_REQUEST_CODE_IMPORT: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission granted
-                    importCSV();
-                } else {
-                    // permission denied
-                    Toast.makeText(this, STORAGE_PERMISSION_REQUIRED, Toast.LENGTH_LONG).show();
-                }
-
-            }
-            break;
-        }
-    }
 
 
 }
