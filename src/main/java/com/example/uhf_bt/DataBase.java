@@ -27,7 +27,7 @@ import java.util.List;
 public class DataBase extends SQLiteOpenHelper {
 
     private static final String db_name = "rfidCounter";
-    private static final int db_version = 82;
+    private static final int db_version = 84;
     private static final String db_table = "marking";
 
     //columns

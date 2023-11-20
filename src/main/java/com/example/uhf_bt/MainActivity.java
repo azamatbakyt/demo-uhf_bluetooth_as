@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -52,6 +53,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -218,6 +222,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public static final int requestcode = 3;
     ArrayList<HashMap<String, String>> myList;
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
@@ -282,11 +287,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 // restore all records from csv file
                 if (checkStoragePermission()) {
                     Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                    fileIntent.setType("text/csv");
+                    fileIntent.setType("*/*");
                     fileIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                    try{
+                    try {
                         startActivityForResult(fileIntent, requestcode);
-                    } catch (ActivityNotFoundException e){
+                    } catch (ActivityNotFoundException e) {
                         Toast.makeText(this, "No activity", Toast.LENGTH_SHORT).show();
                     }
                 } else {
@@ -461,6 +466,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         }
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -490,78 +496,79 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 }
                 break;
             case requestcode:
-                String filePath = data.getData().getPath();
-                Log.e("New file path", filePath);
-                if (filePath.contains("/root_path"))
-                    filePath = filePath.replace("/root_path", "");
-                Log.e("New File path", filePath);
-                db = new DataBase(getApplicationContext());
-                SQLiteDatabase database = db.getWritableDatabase();
-                database.execSQL("DELETE FROM inventory_table_1c");
-                try{
-                    if (resultCode == RESULT_OK){
-                    Log.e("RESULT CODE", "OK");
-                    try{
-                        FileReader file = new FileReader(filePath);
-                        BufferedReader bfReader = new BufferedReader(file);
-                        ContentValues contentValues = new ContentValues();
-                        String line = "";
-                        database.beginTransaction();
-                        while((line = bfReader.readLine()) != null) {
-                            Log.e("line", line);
-                            String[] str = line.split(",", 11); // defining 11 columns with null or blank field
-                            int id = Integer.parseInt(str[0]);
-                            String epc = str[1];
-                            String type = str[2];
-                            String description = str[3];
-                            String invNumber = str[4];
-                            String nomenclature = str[5];
-                            int amount = Integer.parseInt(str[6]);
-                            String facility = str[7];
-                            String premise = str[8];
-                            String dateTime = str[9];
-                            String executor = str[10];
-
-                            contentValues.put(DataBase.db_table_1c_id, id);
-                            contentValues.put(DataBase.db_table_1c_epc, epc);
-                            contentValues.put(DataBase.db_table_1c_type, type);
-                            contentValues.put(DataBase.db_table_1c_description, description);
-                            contentValues.put(DataBase.db_table_1c_inventory_number, invNumber);
-                            contentValues.put(DataBase.db_table_1c_nomenclature, nomenclature);
-                            contentValues.put(DataBase.db_table_1c_amount, amount);
-                            contentValues.put(DataBase.db_table_1c_facility, facility);
-                            contentValues.put(DataBase.db_table_1c_premise, premise);
-                            contentValues.put(DataBase.db_table_1c_datetime, dateTime);
-                            contentValues.put(DataBase.db_table_1c_executor, executor);
-                            database.insert(DataBase.db_table_inventory_1c, null, contentValues);
-
-                            Toast.makeText(this, "Successfully imported", Toast.LENGTH_SHORT).show();
-
-                            Log.e("Import: ", "Successfully imported");
-                        }
-
-                        database.setTransactionSuccessful();
-                        database.endTransaction();
-                        } catch (Exception e){
-                        System.out.println(e.getMessage());
-                    }
-                    } else{
-                        Log.e("RESULT CODE", "InValid");
-                        if (database.inTransaction())
-
-                            database.endTransaction();
-                        Toast.makeText(MainActivity.this, "Only CSV files allowed.", Toast.LENGTH_LONG).show();
-
-                    }
-                } catch (Exception e){
-                    Log.e("Error", e.getMessage().toString());
-                    if (database.inTransaction())
-
-                        database.endTransaction();
-
-                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            break;
+//                String filePath = data.getData().getPath();
+//                Log.e("New file path", filePath);
+//                if (filePath.contains("/root_path"))
+//                    filePath = filePath.replace("/root_path", "");
+//                System.out.println(filePath);
+//                Log.e("New File path", filePath);
+//                db = new DataBase(getApplicationContext());
+//                SQLiteDatabase database = db.getWritableDatabase();
+//                database.execSQL("DELETE FROM inventory_table_1c");
+//                try{
+//                    if (resultCode == RESULT_OK){
+//                    Log.e("RESULT CODE", "OK");
+//                    try{
+//                        InputStream inputStream = getApplicationContext().getContentResolver().openInputStream(data.getData());
+//                        BufferedReader bfReader = new BufferedReader(new InputStreamReader(inputStream));
+//                        ContentValues contentValues = new ContentValues();
+//                        String line = "";
+//                        database.beginTransaction();
+//                        while((line = bfReader.readLine()) != null) {
+//                            Log.e("line", line);
+//                            String[] str = line.split(",", 11); // defining 11 columns with null or blank field
+//                            int id = Integer.parseInt(str[0]);
+//                            String epc = str[1];
+//                            String type = str[2];
+//                            String description = str[3];
+//                            String invNumber = str[4];
+//                            String nomenclature = str[5];
+//                            int amount = Integer.parseInt(str[6]);
+//                            String facility = str[7];
+//                            String premise = str[8];
+//                            String dateTime = str[9];
+//                            String executor = str[10];
+//
+//                            contentValues.put(DataBase.db_table_1c_id, id);
+//                            contentValues.put(DataBase.db_table_1c_epc, epc);
+//                            contentValues.put(DataBase.db_table_1c_type, type);
+//                            contentValues.put(DataBase.db_table_1c_description, description);
+//                            contentValues.put(DataBase.db_table_1c_inventory_number, invNumber);
+//                            contentValues.put(DataBase.db_table_1c_nomenclature, nomenclature);
+//                            contentValues.put(DataBase.db_table_1c_amount, amount);
+//                            contentValues.put(DataBase.db_table_1c_facility, facility);
+//                            contentValues.put(DataBase.db_table_1c_premise, premise);
+//                            contentValues.put(DataBase.db_table_1c_datetime, dateTime);
+//                            contentValues.put(DataBase.db_table_1c_executor, executor);
+//                            database.insert(DataBase.db_table_inventory_1c, null, contentValues);
+//
+//                                    Toast.makeText(this, "Successfully imported", Toast.LENGTH_SHORT).show();
+//
+//                            Log.e("Import: ", "Successfully imported");
+//                        }
+//
+//                        database.setTransactionSuccessful();
+//                        database.endTransaction();
+//                        } catch (Exception e){
+//                        System.out.println(e.getMessage());
+//                    }
+//                    } else{
+//                        Log.e("RESULT CODE", "InValid");
+//                        if (database.inTransaction())
+//
+//                            database.endTransaction();
+//                        Toast.makeText(MainActivity.this, "Only CSV files allowed.", Toast.LENGTH_LONG).show();
+//
+//                    }
+//                } catch (Exception e) {
+//                    Log.e("Error", e.getMessage().toString());
+//                    if (database.inTransaction())
+//
+//                        database.endTransaction();
+//
+//                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//                }
+//                break;
             default:
                 break;
         }
@@ -696,8 +703,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
 
-
-
     protected void initUI() {
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -830,8 +835,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             timeCountCur -= period;
         }
     }
-
-
 
 
 }

@@ -160,6 +160,14 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btnImport"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:paddingBottom="5dp"
+            android:text="Import from 1C" />
     </LinearLayout>
+
 
 </FrameLayout>

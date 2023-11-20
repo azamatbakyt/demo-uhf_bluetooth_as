@@ -1,14 +1,23 @@
 package com.example.uhf_bt.fragment;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.os.UserHandle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +39,9 @@ import com.example.uhf_bt.Models.Premise;
 import com.example.uhf_bt.R;
 import com.example.uhf_bt.SettingsOfUser;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,16 +53,20 @@ public class SetUser extends Fragment {
 
     private Button setSettingsOfUser, editUser, deleteUser,
             setFacility, editFacility, deleteFacility,
-            setPremise, editPremise, deletePremise;
+            setPremise, editPremise, deletePremise, btnImport;
 
     MainActivity context;
     private DataBase db;
     List<Premise> premises;
     ArrayAdapter<Premise> premiseAdapter;
+    private List<Facility> facilities;
+    private List<Executor> users;
+    public static final int requestcode = 1;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // Inflate the layout for context fragment
         View view = inflater.inflate(R.layout.fragment_set_user, container, false);
         init(view);
 
@@ -76,6 +92,9 @@ public class SetUser extends Fragment {
         spnUser = (Spinner) view.findViewById(R.id.spnUser);
         // others
         db = new DataBase(getActivity());
+        facilities = db.getFacilities();
+        users = db.getUsers();
+        btnImport = view.findViewById(R.id.btnImport);
 
         // User settings
         setSettingsOfUser.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +115,20 @@ public class SetUser extends Fragment {
             }
         });
 
+        btnImport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                fileIntent.setType("*/*");
+                fileIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                try {
+                    startActivityForResult(fileIntent, requestcode);
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(context, "No activity", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
         // Premise settings
         setPremise.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +141,108 @@ public class SetUser extends Fragment {
 
     }
 
+    private class ImportDataTask extends Thread {
+
+        private final Context mContext;
+        private final Uri mDataUri;
+        private final int mResultCode;
+
+
+
+        public ImportDataTask(Context context, Uri dataUri, int resultCode) {
+            mContext = context;
+            mDataUri = dataUri;
+            mResultCode = resultCode;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            String filePath = mDataUri.getPath();
+            Log.e("New file path", filePath);
+            if (filePath.contains("/root_path"))
+                filePath = filePath.replace("/root_path", "");
+            System.out.println(filePath);
+            Log.e("New File path", filePath);
+            db = new DataBase(mContext);
+            SQLiteDatabase database = db.getWritableDatabase();
+            database.execSQL("DELETE FROM inventory_table_1c");
+            try {
+                if (mResultCode == RESULT_OK) {
+                    Log.e("RESULT CODE", "OK");
+                    try {
+                        InputStream inputStream = mContext.getContentResolver().openInputStream(mDataUri);
+                        BufferedReader bfReader = new BufferedReader(new InputStreamReader(inputStream));
+                        ContentValues contentValues = new ContentValues();
+                        String line = "";
+                        database.beginTransaction();
+                        while ((line = bfReader.readLine()) != null) {
+                            Log.e("line", line);
+                            String[] str = line.split(",", 11); // defining 11 columns with null or blank field
+                            int id = Integer.parseInt(str[0]);
+                            String epc = str[1];
+                            String type = str[2];
+                            String description = str[3];
+                            String invNumber = str[4];
+                            String nomenclature = str[5];
+                            int amount = Integer.parseInt(str[6]);
+                            String facility = str[7];
+                            String premise = str[8];
+                            String dateTime = str[9];
+                            String executor = str[10];
+
+                            contentValues.put(DataBase.db_table_1c_id, id);
+                            contentValues.put(DataBase.db_table_1c_epc, epc);
+                            contentValues.put(DataBase.db_table_1c_type, type);
+                            contentValues.put(DataBase.db_table_1c_description, description);
+                            contentValues.put(DataBase.db_table_1c_inventory_number, invNumber);
+                            contentValues.put(DataBase.db_table_1c_nomenclature, nomenclature);
+                            contentValues.put(DataBase.db_table_1c_amount, amount);
+                            contentValues.put(DataBase.db_table_1c_facility, facility);
+                            contentValues.put(DataBase.db_table_1c_premise, premise);
+                            contentValues.put(DataBase.db_table_1c_datetime, dateTime);
+                            contentValues.put(DataBase.db_table_1c_executor, executor);
+                            database.insert(DataBase.db_table_inventory_1c, null, contentValues);
+
+                            Toast.makeText(mContext, "Successfully imported", Toast.LENGTH_SHORT).show();
+
+                            Log.e("Import: ", "Successfully imported");
+                        }
+
+                        database.setTransactionSuccessful();
+                        database.endTransaction();
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                } else {
+                    Log.e("RESULT CODE", "InValid");
+                    if (database.inTransaction())
+
+                        database.endTransaction();
+                    Toast.makeText(mContext, "Only CSV files allowed.", Toast.LENGTH_LONG).show();
+
+                }
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage().toString());
+                if (database.inTransaction())
+
+                    database.endTransaction();
+
+                Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == requestcode) {
+            ImportDataTask importDataTask = new ImportDataTask(context, data.getData(), resultCode);
+            importDataTask.run();
+        }
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -115,7 +250,6 @@ public class SetUser extends Fragment {
     }
 
     public void fillSpinner() {
-        List<Facility> facilities = db.getFacilities();
         ArrayAdapter<Facility> facilityAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, facilities);
         spnFacility.setAdapter(facilityAdapter);
 
@@ -185,8 +319,8 @@ public class SetUser extends Fragment {
         });
 
         // Get users
-        List<Executor> executors = db.getUsers();
-        ArrayAdapter<Executor> executorAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, executors);
+
+        ArrayAdapter<Executor> executorAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, users);
         spnUser.setAdapter(executorAdapter);
         spnUser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -212,7 +346,7 @@ public class SetUser extends Fragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (db.deleteUser(user.getName())) {
                                     Toast.makeText(context, "User was deleted", Toast.LENGTH_SHORT).show();
-                                    executors.remove(user);
+                                    users.remove(user);
                                     executorAdapter.notifyDataSetChanged();
                                 }
                             }
